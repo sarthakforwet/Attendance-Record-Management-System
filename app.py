@@ -16,39 +16,50 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-t", required=True, dest="t", help="Time for the meeting", type=int)
 parser.add_argument("-s", dest="s", required=True, help="Number of snips to be taken", type=int)
 parser.add_argument("-cls", dest="cls", required=True, help="Class name")
-parser.add_argument("-clsName", dest='clsName', required=True, help='Class name for the lecture')
+parser.add_argument("-clsName", dest='clsName', required=True, help='Name of the lecture')
 args = parser.parse_args()
 
-# Create DataFrame
-df = pd.DataFrame({"Enrollment Number":[], "Name":[], "Attendance":[], "Probability (%)":[], "Phone Number":[]})
+class AttendanceManager:
+    def __init__(self, mode, clsName, meetName,
+    meetDuration, nSnips, moe):
+        self.mode = mode
+        self.clsName = clsName
+        self.meetName = meetName
+        self.meetDuration = meetDuration
+        self.nSnips = nSnips
+        self.moe = moe
 
-studentScores = {}
-studentAvailable = [os.path.split(e)[1] for e in os.listdir(f"..\Dataset\{args.cls}")]
-for e in studentAvailable:
-    studentScores[e] = []
+        # Create DataFrame
+        self.df = pd.DataFrame({"Enrollment Number":[], "Name":[],
+            "Attendance":[], "Probability (%)":[],
+            "Phone Number":[]})
 
-# Window Module
-def processImage():
-    app = Application(backend='uia')
-    titles = pyautogui.getAllTitles()
-    for e in titles:
-        if args.clsName in e:
-            title = e
-            break
-    #try:
-    app = app.connect(title_re=title, timeout=20)
-    app.window().maximize()
-    time.sleep(3)
-    # Print - "Attendance To be captured"
-    pyautogui.screenshot("snip.png")
-    #im = Image.open('Ss1.png')
-    scores, names = predict_pic("snip.png")
-    #print(scores, names)
-    send_keys("%{TAB}")
-    #app.window().minimize()
-    for s, n in zip(scores, names):
-        print(s, n)
-        studentScores[n].append(s)
+        self.studentScores = {}
+        self.studentAvailable = [os.path.split(e)[1] for e in os.listdir(f"..\Dataset\{args.cls}")]
+        for e in self.studentAvailable:
+            self.studentScores[e] = []
+
+        # Window Module
+    def processImage(self):
+        self.app = Application(backend='uia')
+        titles = pyautogui.getAllTitles()
+        for e in titles:
+            if args.clsName in e:
+                title = e
+                break
+
+        self.app = self.app.connect(title_re=title, timeout=20)
+        self.app.window().maximize()
+        time.sleep(3)
+
+        pyautogui.screenshot("snip.png")
+        scores, names = predict_pic("snip.png")
+        send_keys("%{TAB}")
+        for s, n in zip(scores, names):
+            print(s, n)
+            self.studentScores[n].append(s)
+
+    def run
 
 # Take Screenshots
 snipsTime = random.sample(range(10, args.t*60), args.s) #Change time for a 40 minute class or use a standardized formula.
@@ -58,7 +69,8 @@ ptr = 0
 
 while(ptr < args.t*60):
     ptr +=1
-    print(ptr, end="\r")
+
+    #print(ptr, end="\r")
 
     time.sleep(1)
     if ptr in alertTime:
@@ -76,7 +88,7 @@ scores = []
 for e in studentAvailable:
     if len(studentScores[e]) > 0:
         try:
-            score = np.mean(np.multiply(studentScores[e], wghts))
+            score = np.mean(np.multiply(studentScores[e], wghts[::-1][:len(studentScores[e])]))
             if score > 0.6:
                 record = {}
                 record["Enrollment Number"] = e
