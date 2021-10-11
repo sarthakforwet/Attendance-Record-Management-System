@@ -6,33 +6,20 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>734</width>
-    <height>457</height>
+    <width>835</width>
+    <height>554</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Attendance Record Management System</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QPushButton" name="loginBtn">
-    <property name="geometry">
-     <rect>
-      <x>580</x>
-      <y>170</y>
-      <width>93</width>
-      <height>28</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>LOGIN</string>
-    </property>
-   </widget>
    <widget class="QLabel" name="label_4">
     <property name="geometry">
      <rect>
       <x>430</x>
       <y>40</y>
-      <width>241</width>
+      <width>301</width>
       <height>31</height>
      </rect>
     </property>
@@ -86,38 +73,12 @@
      <string>Enter your login credentials</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="forgotPassBtn">
-    <property name="geometry">
-     <rect>
-      <x>420</x>
-      <y>170</y>
-      <width>101</width>
-      <height>28</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Forgot Password?</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_5">
-    <property name="geometry">
-     <rect>
-      <x>540</x>
-      <y>210</y>
-      <width>111</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Create a new account</string>
-    </property>
-   </widget>
    <widget class="QPushButton" name="pushButton">
     <property name="geometry">
      <rect>
-      <x>650</x>
-      <y>200</y>
-      <width>61</width>
+      <x>550</x>
+      <y>300</y>
+      <width>71</width>
       <height>31</height>
      </rect>
     </property>
@@ -358,7 +319,7 @@
       <string/>
      </property>
      <property name="pixmap">
-      <pixmap>C:/Users/sarth/OneDrive/Desktop/Docs/MUACM/Acm_Event_post_v2_1.png</pixmap>
+      <pixmap>../../sarth/OneDrive/Desktop/Docs/MUACM/Acm_Event_post_v2_1.png</pixmap>
      </property>
      <property name="scaledContents">
       <bool>true</bool>
@@ -384,13 +345,128 @@
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QLabel" name="label">
+   <widget class="QTextBrowser" name="email">
+    <property name="geometry">
+     <rect>
+      <x>600</x>
+      <y>80</y>
+      <width>111</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="html">
+     <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+   </widget>
+   <widget class="QTextBrowser" name="email_2">
+    <property name="geometry">
+     <rect>
+      <x>600</x>
+      <y>120</y>
+      <width>111</width>
+      <height>31</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QTextBrowser" name="email_3">
+    <property name="geometry">
+     <rect>
+      <x>600</x>
+      <y>240</y>
+      <width>111</width>
+      <height>31</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QTextBrowser" name="email_4">
+    <property name="geometry">
+     <rect>
+      <x>600</x>
+      <y>200</y>
+      <width>111</width>
+      <height>31</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QTextBrowser" name="email_5">
+    <property name="geometry">
+     <rect>
+      <x>600</x>
+      <y>160</y>
+      <width>111</width>
+      <height>31</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_8">
+    <property name="geometry">
+     <rect>
+      <x>480</x>
+      <y>70</y>
+      <width>87</width>
+      <height>54</height>
+     </rect>
+    </property>
+    <property name="palette">
+     <palette>
+      <active>
+       <colorrole role="WindowText">
+        <brush brushstyle="SolidPattern">
+         <color alpha="255">
+          <red>200</red>
+          <green>33</green>
+          <blue>97</blue>
+         </color>
+        </brush>
+       </colorrole>
+      </active>
+      <inactive>
+       <colorrole role="WindowText">
+        <brush brushstyle="SolidPattern">
+         <color alpha="255">
+          <red>200</red>
+          <green>33</green>
+          <blue>97</blue>
+         </color>
+        </brush>
+       </colorrole>
+      </inactive>
+      <disabled>
+       <colorrole role="WindowText">
+        <brush brushstyle="SolidPattern">
+         <color alpha="255">
+          <red>120</red>
+          <green>120</green>
+          <blue>120</blue>
+         </color>
+        </brush>
+       </colorrole>
+      </disabled>
+     </palette>
+    </property>
+    <property name="font">
+     <font>
+      <family>Segoe Print</family>
+      <pointsize>11</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>NAME</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_9">
     <property name="geometry">
      <rect>
       <x>460</x>
-      <y>80</y>
-      <width>73</width>
-      <height>26</height>
+      <y>110</y>
+      <width>87</width>
+      <height>54</height>
      </rect>
     </property>
     <property name="palette">
@@ -442,13 +518,71 @@
      <string>EMAIL ID</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label_2">
+   <widget class="QLabel" name="label_11">
+    <property name="geometry">
+     <rect>
+      <x>400</x>
+      <y>150</y>
+      <width>191</width>
+      <height>54</height>
+     </rect>
+    </property>
+    <property name="palette">
+     <palette>
+      <active>
+       <colorrole role="WindowText">
+        <brush brushstyle="SolidPattern">
+         <color alpha="255">
+          <red>200</red>
+          <green>33</green>
+          <blue>97</blue>
+         </color>
+        </brush>
+       </colorrole>
+      </active>
+      <inactive>
+       <colorrole role="WindowText">
+        <brush brushstyle="SolidPattern">
+         <color alpha="255">
+          <red>200</red>
+          <green>33</green>
+          <blue>97</blue>
+         </color>
+        </brush>
+       </colorrole>
+      </inactive>
+      <disabled>
+       <colorrole role="WindowText">
+        <brush brushstyle="SolidPattern">
+         <color alpha="255">
+          <red>120</red>
+          <green>120</green>
+          <blue>120</blue>
+         </color>
+        </brush>
+       </colorrole>
+      </disabled>
+     </palette>
+    </property>
+    <property name="font">
+     <font>
+      <family>Segoe Print</family>
+      <pointsize>11</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>CONTACT NUMBER</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_10">
     <property name="geometry">
      <rect>
       <x>440</x>
-      <y>120</y>
-      <width>91</width>
-      <height>21</height>
+      <y>190</y>
+      <width>121</width>
+      <height>54</height>
      </rect>
     </property>
     <property name="palette">
@@ -500,45 +634,72 @@
      <string>PASSWORD</string>
     </property>
    </widget>
-   <widget class="QTextBrowser" name="email">
+   <widget class="QLabel" name="label_12">
     <property name="geometry">
      <rect>
-      <x>550</x>
-      <y>80</y>
-      <width>111</width>
-      <height>31</height>
+      <x>390</x>
+      <y>230</y>
+      <width>241</width>
+      <height>54</height>
      </rect>
     </property>
-   </widget>
-   <widget class="QTextBrowser" name="email_2">
-    <property name="geometry">
-     <rect>
-      <x>550</x>
-      <y>120</y>
-      <width>111</width>
-      <height>31</height>
-     </rect>
+    <property name="palette">
+     <palette>
+      <active>
+       <colorrole role="WindowText">
+        <brush brushstyle="SolidPattern">
+         <color alpha="255">
+          <red>200</red>
+          <green>33</green>
+          <blue>97</blue>
+         </color>
+        </brush>
+       </colorrole>
+      </active>
+      <inactive>
+       <colorrole role="WindowText">
+        <brush brushstyle="SolidPattern">
+         <color alpha="255">
+          <red>200</red>
+          <green>33</green>
+          <blue>97</blue>
+         </color>
+        </brush>
+       </colorrole>
+      </inactive>
+      <disabled>
+       <colorrole role="WindowText">
+        <brush brushstyle="SolidPattern">
+         <color alpha="255">
+          <red>120</red>
+          <green>120</green>
+          <blue>120</blue>
+         </color>
+        </brush>
+       </colorrole>
+      </disabled>
+     </palette>
+    </property>
+    <property name="font">
+     <font>
+      <family>Segoe Print</family>
+      <pointsize>11</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>CONFIRM PASSWORD</string>
     </property>
    </widget>
-   <zorder>label_5</zorder>
-   <zorder>loginBtn</zorder>
-   <zorder>label_4</zorder>
-   <zorder>forgotPassBtn</zorder>
-   <zorder>pushButton</zorder>
-   <zorder>frame</zorder>
-   <zorder>label_7</zorder>
-   <zorder>label</zorder>
-   <zorder>label_2</zorder>
-   <zorder>email</zorder>
-   <zorder>email_2</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>734</width>
-     <height>21</height>
+     <width>835</width>
+     <height>26</height>
     </rect>
    </property>
   </widget>
