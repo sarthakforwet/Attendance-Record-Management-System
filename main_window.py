@@ -9,7 +9,10 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QDialog
+from PyQt5.uic import loadUi
 import os
+
 from appUtil import AttendanceManager
 
 class Ui_MainWindow(object):
@@ -307,6 +310,7 @@ class Ui_MainWindow(object):
         # Backend stuff
         self.submitAndRun.clicked.connect(self.runApp)
 
+
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Attendance Record Management System"))
@@ -356,11 +360,37 @@ class Ui_MainWindow(object):
         #os.system(f'python app.py -t {meetDuration} -s {nSnips} -cls {clsName} -clsName "{meetName}"')
 
 
+class LoginWindow(QDialog):
+    def __init__(self):
+        super(LoginWindow,self).__init__()
+        loadUi("LoginWindow.ui", self)
+        self.SignUp.clicked.connect(self.goToSignUpWindow)
+
+    def goToSignUpWindow(self):
+        stackWidget.setCurrentIndex(stackWidget.currentIndex()+1)
+
+class SignUpWindow(QDialog):
+    def __init__(self):
+        super(SignUpWindow, self).__init__()
+        loadUi("SignUpWindow.ui", self)
+
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
+    stackWidget = QtWidgets.QStackedWidget()
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
-    MainWindow.show()
+
+    loginWindow = LoginWindow()
+    signUpWindow = SignUpWindow()
+
+    stackWidget.addWidget(loginWindow)
+    stackWidget.addWidget(signUpWindow)
+    stackWidget.addWidget(MainWindow)
+    stackWidget.setFixedHeight(500)
+    stackWidget.setFixedWidth(800)
+
+    stackWidget.show()
+
     sys.exit(app.exec_())
