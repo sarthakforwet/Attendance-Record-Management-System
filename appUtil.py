@@ -63,7 +63,7 @@ class AttendanceManager:
     def arrangeSlots(self):
         # Take Screenshots
         self.snipsTime = random.sample(range(10, self.meetDuration*60), self.nSnips) #Change time for a 40 minute class or use a standardized formula.
-        #print(self.snipsTime)
+        print(self.snipsTime)
         self.alertTime = [e-3 for e in self.snipsTime]
 
     def runApp(self):
@@ -71,7 +71,7 @@ class AttendanceManager:
         ptr = 0
         while(ptr < self.meetDuration*60):
             ptr +=1
-            #print(ptr, end="\r")
+            print(ptr, end="\r")
             time.sleep(1)
             if ptr in self.alertTime:
                 send_attendance_alert(self.meetName, ptr)
