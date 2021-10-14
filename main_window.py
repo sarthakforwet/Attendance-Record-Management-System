@@ -9,21 +9,202 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QDialog
+from PyQt5.QtWidgets import QDialog, QMainWindow
 from PyQt5.uic import loadUi
-import os
-
+from PyQt5.QtCore import QPropertyAnimation
+import os, sys, random, time, json
+import threading, re
 from appUtil import AttendanceManager
+from PyQt5.QtGui import QValidator
+
+# Shift screens
+def goToHome():
+    stackWidget.setCurrentIndex(3)
+
+def goToLoginWindow():
+    stackWidget.setCurrentIndex(0)
+
+def goToSignUpWindow(self):
+    stackWidget.setCurrentIndex(1)
+
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(478, 473)
+        MainWindow.resize(737, 439)
+        MainWindow.setMaximumSize(QtCore.QSize(800, 600))
+        palette = QtGui.QPalette()
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Base, brush)
+        brush = QtGui.QBrush(QtGui.QColor(200, 214, 228))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Window, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Base, brush)
+        brush = QtGui.QBrush(QtGui.QColor(200, 214, 228))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Window, brush)
+        brush = QtGui.QBrush(QtGui.QColor(200, 214, 228))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Base, brush)
+        brush = QtGui.QBrush(QtGui.QColor(200, 214, 228))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
+        MainWindow.setPalette(palette)
+        MainWindow.setDockOptions(QtWidgets.QMainWindow.AllowTabbedDocks|QtWidgets.QMainWindow.AnimatedDocks|QtWidgets.QMainWindow.VerticalTabs)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
+        self.centralwidget.setAutoFillBackground(False)
         self.centralwidget.setObjectName("centralwidget")
+        self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
+        self.gridLayout.setSizeConstraint(QtWidgets.QLayout.SetDefaultConstraint)
+        self.gridLayout.setContentsMargins(9, 9, 3, 9)
+        self.gridLayout.setSpacing(9)
+        self.gridLayout.setObjectName("gridLayout")
+        self.label_8 = QtWidgets.QLabel(self.centralwidget)
+        self.label_8.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_8.setObjectName("label_8")
+        self.gridLayout.addWidget(self.label_8, 8, 0, 1, 1)
+        #self.login_signUp = QtWidgets.QPushButton(self.centralwidget)
+        palette = QtGui.QPalette()
+        brush = QtGui.QBrush(QtGui.QColor(170, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(170, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Text, brush)
+        brush = QtGui.QBrush(QtGui.QColor(170, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ButtonText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(170, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(170, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Text, brush)
+        brush = QtGui.QBrush(QtGui.QColor(170, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ButtonText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Text, brush)
+        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
+        #self.login_signUp.setPalette(palette)
+        font = QtGui.QFont()
+        font.setFamily("Arial")
+        font.setPointSize(10)
+        font.setBold(True)
+        font.setWeight(75)
+        #self.login_signUp.setFont(font)
+        #self.login_signUp.setFlat(True)
+        #self.login_signUp.setObjectName("login_signUp")
+        #self.gridLayout.addWidget(self.login_signUp, 1, 1, 1, 1)
+        self.home = QtWidgets.QPushButton(self.centralwidget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.home.sizePolicy().hasHeightForWidth())
+        self.home.setSizePolicy(sizePolicy)
+        self.home.setMinimumSize(QtCore.QSize(120, 10))
+        self.home.setMaximumSize(QtCore.QSize(300, 16777215))
+        self.home.setBaseSize(QtCore.QSize(10, 10))
+        palette = QtGui.QPalette()
+        brush = QtGui.QBrush(QtGui.QColor(170, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ButtonText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(170, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ButtonText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
+        self.home.setPalette(palette)
+        font = QtGui.QFont()
+        font.setFamily("Arial")
+        font.setPointSize(10)
+        font.setBold(True)
+        font.setWeight(75)
+        self.home.setFont(font)
+        self.home.setAutoFillBackground(False)
+        self.home.setAutoDefault(False)
+        self.home.setDefault(False)
+        self.home.setFlat(True)
+        self.home.setObjectName("home")
+        self.gridLayout.addWidget(self.home, 1, 0, 1, 1)
+        self.duration = QtWidgets.QSpinBox(self.centralwidget)
+        self.duration.setCorrectionMode(QtWidgets.QAbstractSpinBox.CorrectToPreviousValue)
+        self.duration.setMaximum(120)
+        self.duration.setDisplayIntegerBase(10)
+        self.duration.setObjectName("duration")
+        self.gridLayout.addWidget(self.duration, 6, 1, 1, 1)
+        self.submitAndRun = QtWidgets.QPushButton(self.centralwidget)
+        font = QtGui.QFont()
+        font.setFamily("Palatino Linotype")
+        font.setPointSize(12)
+        font.setBold(True)
+        font.setItalic(True)
+        font.setWeight(75)
+        self.submitAndRun.setFont(font)
+        self.submitAndRun.setObjectName("submitAndRun")
+        self.gridLayout.addWidget(self.submitAndRun, 9, 1, 1, 1)
+        self.label_3 = QtWidgets.QLabel(self.centralwidget)
+        self.label_3.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_3.setObjectName("label_3")
+        self.gridLayout.addWidget(self.label_3, 3, 0, 1, 1)
+        self.mode = QtWidgets.QComboBox(self.centralwidget)
+        self.mode.setObjectName("mode")
+        self.mode.addItem("")
+        self.mode.addItem("")
+        self.gridLayout.addWidget(self.mode, 3, 1, 1, 1)
+        self.label_6 = QtWidgets.QLabel(self.centralwidget)
+        self.label_6.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_6.setObjectName("label_6")
+        self.gridLayout.addWidget(self.label_6, 6, 0, 1, 1)
+        self.moe = QtWidgets.QComboBox(self.centralwidget)
+        self.moe.setObjectName("moe")
+        self.moe.addItem("")
+        self.moe.addItem("")
+        self.gridLayout.addWidget(self.moe, 8, 1, 1, 1)
+        self.label_7 = QtWidgets.QLabel(self.centralwidget)
+        self.label_7.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_7.setObjectName("label_7")
+        self.gridLayout.addWidget(self.label_7, 7, 0, 1, 1)
+        self.label_4 = QtWidgets.QLabel(self.centralwidget)
+        self.label_4.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_4.setObjectName("label_4")
+        self.gridLayout.addWidget(self.label_4, 4, 0, 1, 1)
+        self.label_5 = QtWidgets.QLabel(self.centralwidget)
+        self.label_5.setMaximumSize(QtCore.QSize(300, 300))
+        self.label_5.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_5.setObjectName("label_5")
+        self.gridLayout.addWidget(self.label_5, 5, 0, 1, 1)
+        self.lineEdit = QtWidgets.QLineEdit(self.centralwidget)
+        self.lineEdit.setMaximumSize(QtCore.QSize(200, 16777215))
+        self.lineEdit.setObjectName("lineEdit")
+        self.gridLayout.addWidget(self.lineEdit, 4, 1, 1, 1)
+        self.nSnips = QtWidgets.QComboBox(self.centralwidget)
+        self.nSnips.setObjectName("nSnips")
+        self.nSnips.addItem("")
+        self.nSnips.addItem("")
+        self.nSnips.addItem("")
+        self.gridLayout.addWidget(self.nSnips, 7, 1, 1, 1)
+        self.lineEdit_2 = QtWidgets.QLineEdit(self.centralwidget)
+        self.lineEdit_2.setMaximumSize(QtCore.QSize(200, 16777215))
+        self.lineEdit_2.setObjectName("lineEdit_2")
+        self.gridLayout.addWidget(self.lineEdit_2, 5, 1, 1, 1)
+        self.pushButton_2 = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton_2.setEnabled(False)
+        self.pushButton_2.setFocusPolicy(QtCore.Qt.ClickFocus)
+        self.pushButton_2.setFlat(True)
+        self.pushButton_2.setObjectName("pushButton_2")
+        self.gridLayout.addWidget(self.pushButton_2, 10, 2, 1, 1)
         self.head = QtWidgets.QLabel(self.centralwidget)
-        self.head.setGeometry(QtCore.QRect(0, 0, 431, 51))
-
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(209, 31, 209))
         brush.setStyle(QtCore.Qt.SolidPattern)
@@ -161,7 +342,6 @@ class Ui_MainWindow(object):
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ToolTipText, brush)
         self.head.setPalette(palette)
-
         font = QtGui.QFont()
         font.setFamily("Segoe Script")
         font.setPointSize(18)
@@ -172,126 +352,8 @@ class Ui_MainWindow(object):
         self.head.setScaledContents(True)
         self.head.setWordWrap(True)
         self.head.setObjectName("head")
-        self.groupBox = QtWidgets.QGroupBox(self.centralwidget)
-        self.groupBox.setGeometry(QtCore.QRect(10, 40, 451, 391))
-        font = QtGui.QFont()
-        font.setFamily("Noto Serif SC Black")
-        font.setPointSize(10)
-        font.setBold(True)
-        font.setWeight(75)
-
-        self.groupBox.setFont(font)
-        self.groupBox.setTitle("")
-        self.groupBox.setObjectName("groupBox")
-        self.gridLayoutWidget_2 = QtWidgets.QWidget(self.groupBox)
-        self.gridLayoutWidget_2.setGeometry(QtCore.QRect(10, 20, 333, 181))
-        self.gridLayoutWidget_2.setObjectName("gridLayoutWidget_2")
-
-        self.gridLayout_2 = QtWidgets.QGridLayout(self.gridLayoutWidget_2)
-        self.gridLayout_2.setContentsMargins(0, 0, 0, 0)
-        self.gridLayout_2.setObjectName("gridLayout_2")
-
-        self.label_7 = QtWidgets.QLabel(self.gridLayoutWidget_2)
-        self.label_7.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_7.setObjectName("label_7")
-        self.gridLayout_2.addWidget(self.label_7, 4, 0, 1, 1)
-
-        self.label_6 = QtWidgets.QLabel(self.gridLayoutWidget_2)
-        self.label_6.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_6.setObjectName("label_6")
-        self.gridLayout_2.addWidget(self.label_6, 3, 0, 1, 1)
-
-        self.nSnips = QtWidgets.QComboBox(self.gridLayoutWidget_2)
-        self.nSnips.setObjectName("nSnips")
-        self.nSnips.addItem("")
-        self.nSnips.addItem("")
-        self.nSnips.addItem("")
-        self.gridLayout_2.addWidget(self.nSnips, 4, 1, 1, 1)
-
-        self.label_5 = QtWidgets.QLabel(self.gridLayoutWidget_2)
-        self.label_5.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_5.setObjectName("label_5")
-        self.gridLayout_2.addWidget(self.label_5, 2, 0, 1, 1)
-
-        self.duration = QtWidgets.QSpinBox(self.gridLayoutWidget_2)
-        self.duration.setCorrectionMode(QtWidgets.QAbstractSpinBox.CorrectToPreviousValue)
-        self.duration.setMaximum(120)
-        self.duration.setDisplayIntegerBase(10)
-        self.duration.setObjectName("duration")
-        self.gridLayout_2.addWidget(self.duration, 3, 1, 1, 1)
-
-        self.clsName = QtWidgets.QTextEdit(self.gridLayoutWidget_2)
-        self.clsName.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        self.clsName.setTabChangesFocus(True)
-        self.clsName.setLineWrapMode(QtWidgets.QTextEdit.WidgetWidth)
-        self.clsName.setTabStopDistance(80.0)
-        self.clsName.setObjectName("clsName")
-        self.gridLayout_2.addWidget(self.clsName, 1, 1, 1, 1)
-
-        self.label_4 = QtWidgets.QLabel(self.gridLayoutWidget_2)
-        self.label_4.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_4.setObjectName("label_4")
-        self.gridLayout_2.addWidget(self.label_4, 1, 0, 1, 1)
-
-        self.moe = QtWidgets.QComboBox(self.gridLayoutWidget_2)
-        self.moe.setObjectName("moe")
-        self.moe.addItem("")
-        self.moe.addItem("")
-        self.gridLayout_2.addWidget(self.moe, 5, 1, 1, 1)
-
-        self.label_8 = QtWidgets.QLabel(self.gridLayoutWidget_2)
-        self.label_8.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_8.setObjectName("label_8")
-        self.gridLayout_2.addWidget(self.label_8, 5, 0, 1, 1)
-
-        self.meetName = QtWidgets.QTextEdit(self.gridLayoutWidget_2)
-        self.meetName.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        self.meetName.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        self.meetName.setTabChangesFocus(True)
-        self.meetName.setObjectName("meetName")
-        self.gridLayout_2.addWidget(self.meetName, 2, 1, 1, 1)
-
-        self.mode = QtWidgets.QComboBox(self.gridLayoutWidget_2)
-        self.mode.setObjectName("mode")
-        self.mode.addItem("")
-        self.mode.addItem("")
-        self.gridLayout_2.addWidget(self.mode, 0, 1, 1, 1)
-
-        self.label_3 = QtWidgets.QLabel(self.gridLayoutWidget_2)
-        self.label_3.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_3.setObjectName("label_3")
-        self.gridLayout_2.addWidget(self.label_3, 0, 0, 1, 1)
-
-        self.label = QtWidgets.QLabel(self.groupBox)
-        self.label.setGeometry(QtCore.QRect(10, 290, 81, 41))
-        self.label.setScaledContents(False)
-        self.label.setObjectName("label")
-
-        self.label_2 = QtWidgets.QLabel(self.groupBox)
-        self.label_2.setGeometry(QtCore.QRect(100, 290, 81, 41))
-        self.label_2.setText("")
-        self.label_2.setObjectName("label_2")
-
-        self.submitAndRun = QtWidgets.QPushButton(self.groupBox)
-        self.submitAndRun.setGeometry(QtCore.QRect(160, 210, 181, 51))
-
-        font = QtGui.QFont()
-        font.setFamily("Palatino Linotype")
-        font.setPointSize(12)
-        font.setBold(True)
-        font.setItalic(True)
-        font.setWeight(75)
-        self.submitAndRun.setFont(font)
-        self.submitAndRun.setObjectName("submitAndRun")
+        self.gridLayout.addWidget(self.head, 2, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
-        self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 478, 21))
-        self.menubar.setObjectName("menubar")
-        self.menuFile = QtWidgets.QMenu(self.menubar)
-        self.menuFile.setObjectName("menuFile")
-        self.menuEdit = QtWidgets.QMenu(self.menubar)
-        self.menuEdit.setObjectName("menuEdit")
-        MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
@@ -299,11 +361,9 @@ class Ui_MainWindow(object):
         self.actionNew.setObjectName("actionNew")
         self.copy = QtWidgets.QAction(MainWindow)
         self.copy.setObjectName("copy")
-        self.menuFile.addAction(self.actionNew)
-        self.menuEdit.addAction(self.copy)
-        self.menubar.addAction(self.menuFile.menuAction())
-        self.menubar.addAction(self.menuEdit.menuAction())
 
+        # Change Bg Color
+        MainWindow.setStyleSheet("QMainWindow {background-color:#c8d6e4;}")
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
@@ -314,26 +374,25 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Attendance Record Management System"))
-        self.head.setText(_translate("MainWindow", "Enter the Configurations"))
-        self.label_7.setText(_translate("MainWindow", "Number of Snips"))
+        self.label_8.setText(_translate("MainWindow", "Method of Evaluation"))
+        #self.login_signUp.setText(_translate("MainWindow", "Login/SignUp"))
+        self.home.setText(_translate("MainWindow", "Home"))
+        self.duration.setSpecialValueText(_translate("MainWindow", "40"))
+        self.submitAndRun.setText(_translate("MainWindow", "Submit and Run"))
+        self.label_3.setText(_translate("MainWindow", "Mode of Meeting"))
+        self.mode.setItemText(0, _translate("MainWindow", "Microsoft Teams"))
+        self.mode.setItemText(1, _translate("MainWindow", "Zoom"))
         self.label_6.setText(_translate("MainWindow", "Meeting Duration (in mins)"))
+        self.moe.setItemText(0, _translate("MainWindow", "Weighted Average"))
+        self.moe.setItemText(1, _translate("MainWindow", "Top N"))
+        self.label_7.setText(_translate("MainWindow", "Number of Snips"))
+        self.label_4.setText(_translate("MainWindow", "Class Name"))
+        self.label_5.setText(_translate("MainWindow", "Meeting Name"))
         self.nSnips.setItemText(0, _translate("MainWindow", "1"))
         self.nSnips.setItemText(1, _translate("MainWindow", "3"))
         self.nSnips.setItemText(2, _translate("MainWindow", "5"))
-        self.label_5.setText(_translate("MainWindow", "Meeting Name"))
-        self.duration.setSpecialValueText(_translate("MainWindow", "40"))
-        self.clsName.setStatusTip(_translate("MainWindow", "Name of the class whose meeting is happening"))
-        self.label_4.setText(_translate("MainWindow", "Class Name"))
-        self.moe.setItemText(0, _translate("MainWindow", "Weighted Average"))
-        self.moe.setItemText(1, _translate("MainWindow", "Top N"))
-        self.label_8.setText(_translate("MainWindow", "Method of Evaluation"))
-        self.mode.setItemText(0, _translate("MainWindow", "Microsoft Teams"))
-        self.mode.setItemText(1, _translate("MainWindow", "Zoom"))
-        self.label_3.setText(_translate("MainWindow", "Mode of Meeting"))
-        self.label.setText(_translate("MainWindow", "CountDown:"))
-        self.submitAndRun.setText(_translate("MainWindow", "Submit and Run"))
-        self.menuFile.setTitle(_translate("MainWindow", "File"))
-        self.menuEdit.setTitle(_translate("MainWindow", "Edit"))
+        self.pushButton_2.setText(_translate("MainWindow", "Developer Info"))
+        self.head.setText(_translate("MainWindow", "Enter the Configurations"))
         self.actionNew.setText(_translate("MainWindow", "New"))
         self.actionNew.setStatusTip(_translate("MainWindow", "Ne w File can be created"))
         self.actionNew.setShortcut(_translate("MainWindow", "Ctrl+N"))
@@ -364,33 +423,151 @@ class LoginWindow(QDialog):
     def __init__(self):
         super(LoginWindow,self).__init__()
         loadUi("LoginWindow.ui", self)
-        self.SignUp.clicked.connect(self.goToSignUpWindow)
+        self.setWindowTitle("Attendance Record Management System")
+        self.setStyleSheet("QDialog {background-color:#c8d6e4;}")
 
-    def goToSignUpWindow(self):
-        stackWidget.setCurrentIndex(stackWidget.currentIndex()+1)
+        self.SignUp.clicked.connect(goToSignUpWindow)
+        self.loginBtn.clicked.connect(self.verifyAndLogin)
+        self.home.clicked.connect(goToHome)
+        self.login_signUp.clicked.connect(goToLoginWindow)
+
+    def verifyAndLogin(self):
+        email = self.email_id.toPlainText()
+        #password = QtWidgets.QLabel("password").text()
+        password = self.password.text()
+        error_ = 0
+        with open('data.json','r+') as f:
+            data=json.load(f)
+
+        if(email in data['details'].keys()):
+            if(password == data['details'][str(email)]['Password']):
+                self.goToConfigWindow()
+            else:
+                error_ = 1
+        else:
+            error_ = 1
+
+        if error_:
+            msg = QtWidgets.QMessageBox()
+            msg.setWindowTitle("Login Credentials Invalid")
+            msg.setText("You appeared to have entered wrong email/password")
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+            x = msg.exec_()
+            self.eraseLabels()
+
+    def eraseLabels(self):
+        self.email_id.clear()
+        self.password.clear()
+
+    def goToConfigWindow(self):
+        stackWidget.setCurrentIndex(2)
+
+    def updateText(self):
+        with open("textSnippets.txt", "r") as f:
+            data = f.read().split("\n\n")
+            self.loginText.setText(data[0])
+            for i in range(10):
+                print(i)
+                val = random.randint(0, len(data)-1)
+                self.anim = QPropertyAnimation(self.loginText, b"text")
+                self.loginText.setText(data[val])
+                time.sleep(5)
+                self.anim.setDuration(200)
 
 class SignUpWindow(QDialog):
     def __init__(self):
         super(SignUpWindow, self).__init__()
         loadUi("SignUpWindow.ui", self)
+        self.setWindowTitle("Attendance Record Management System")
+        self.setStyleSheet("QDialog {background-color:#c8d6e4;}")
+
+        self.signUp.clicked.connect(self.SignUp)
+        self.home.clicked.connect(goToHome)
+        self.login_signUp.clicked.connect(goToLoginWindow)
+
+        # Constrain Input
+        validator = QtGui.QRegExpValidator(QtCore.QRegExp(r'[0-9]{10}'))
+        self.contact.setValidator(validator)
+
+    def SignUp(self):
+        name_ = self.name.toPlainText()
+        email_id_ = self.email_id.toPlainText()
+
+        regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+        if not re.fullmatch(regex, email_id_):
+            msg = QtWidgets.QMessageBox()
+            msg.setWindowTitle("Email invalid!")
+            msg.setText("The entered email address is not a valid one!")
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+            _ = msg.exec_()
+            self.eraseLabels()
+            return
+        number_ = self.contact.text()
+        pwd1 = self.password.text()
+        pwd2 = self.cPassword.text()
+
+        if(pwd1==pwd2):
+            with open('data.json','r+') as fil:
+                ob1=json.load(fil)
+
+            if email_id_ in ob1["details"].keys():
+                msg = QtWidgets.QMessageBox()
+                msg.setWindowTitle("Email already present")
+                msg.setText("The entered is already taken up. Please enter a unique email id")
+                msg.setIcon(QtWidgets.QMessageBox.Critical)
+                _ = msg.exec_()
+
+            ob1['details'][email_id_]={'Name':name_,'Contact_number':number_,'Password':pwd1}
+            with open("data.json", "w") as f:
+                json.dump(ob1,f)
+
+            self.goToLoginWindow()
+        else:
+            msg = QtWidgets.QMessageBox()
+            msg.setWindowTitle("Passwords Don't Match")
+            msg.setText("The entered passwords don't match. Try it again.")
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+            _ = msg.exec_()
+
+    def eraseLabels(self):
+        self.name.clear()
+        self.email_id.clear()
+        self.contact.clear()
+        self.password.clear()
+        self.cPassword.clear()
+
+class HomeWindow(QMainWindow):
+    def __init__(self):
+        super(HomeWindow, self).__init__()
+        loadUi("HomeWindow.ui", self)
+        self.home.clicked.connect(goToHome)
+        self.login_signUp.clicked.connect(goToLoginWindow)
 
 if __name__ == "__main__":
-    import sys
     app = QtWidgets.QApplication(sys.argv)
     stackWidget = QtWidgets.QStackedWidget()
     MainWindow = QtWidgets.QMainWindow()
+    MainWindow.setWindowTitle("Title")
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
 
     loginWindow = LoginWindow()
+    loginWindow.setWindowTitle("Attendance Record Management System")
     signUpWindow = SignUpWindow()
+    signUpWindow.setWindowTitle("Attendance Record Management System")
+    homeWindow = HomeWindow()
+    homeWindow.setWindowTitle("Attendance Record Management System")
+
 
     stackWidget.addWidget(loginWindow)
     stackWidget.addWidget(signUpWindow)
     stackWidget.addWidget(MainWindow)
+    stackWidget.addWidget(homeWindow)
     stackWidget.setFixedHeight(500)
     stackWidget.setFixedWidth(800)
 
     stackWidget.show()
-
+    #print(app._running())
+    #t1 = threading.Thread(target = loginWindow.updateText)
+    #t1.start()
     sys.exit(app.exec_())

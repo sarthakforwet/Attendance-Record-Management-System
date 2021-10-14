@@ -133,3 +133,4 @@ class AttendanceManager:
             smtp.login(FROM, EMAIL_PASSWORD)
             smtp.send_message(msg)
             print("mail sent!")
+

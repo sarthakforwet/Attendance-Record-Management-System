@@ -1,0 +1,12 @@
+To bolster the burgeoning trend of Online education, we introduce an attendance record management system which is equipped 
+with functionalities such as real time face recognition, dynamic configuration
+settings and many more.
+
+The system is capable of working with platforms like Microsoft Teams and Zoom.
+
+
+The system uses two methods of evaluation viz Weighted Averages and Top N
+approach
+
+Get ready to enjoy a full pleasure of attending the classes without the
+disturbance or overhead of marking the attendance manually.
