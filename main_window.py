@@ -27,6 +27,13 @@ def goToLoginWindow():
 def goToSignUpWindow(self):
     stackWidget.setCurrentIndex(1)
 
+def goToForgotPasswordWindow(email):
+    global resetEmail
+    resetEmail = email
+    stackWidget.setCurrentIndex(4)
+
+def goToDevInfoWindow():
+    stackWidget.setCurrentIndex(5)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -369,7 +376,7 @@ class Ui_MainWindow(object):
 
         # Backend stuff
         self.submitAndRun.clicked.connect(self.runApp)
-
+        #self.devInfo.clicked.connect(goToDevInfoWindow)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -430,6 +437,9 @@ class LoginWindow(QDialog):
         self.loginBtn.clicked.connect(self.verifyAndLogin)
         self.home.clicked.connect(goToHome)
         self.login_signUp.clicked.connect(goToLoginWindow)
+        self.forgotPassBtn.clicked.connect(self.resetPassword)
+        self.devInfo.clicked.connect(goToDevInfoWindow)
+
 
     def verifyAndLogin(self):
         email = self.email_id.toPlainText()
@@ -474,6 +484,22 @@ class LoginWindow(QDialog):
                 time.sleep(5)
                 self.anim.setDuration(200)
 
+    def resetPassword(self):
+        email, _ = QtWidgets.QInputDialog.getText(self, "Enter email address", "Enter your email address to validate.")
+
+        # Check if email exists
+        with open("data.json", "r+") as f:
+            obj = json.load(f)
+
+        if email in obj["details"].keys():
+            goToForgotPasswordWindow(email)
+        else:
+            msg = QtWidgets.QMessageBox()
+            msg.setWindowTitle("Email id not exists!")
+            msg.setText("Profile corresponding to the entered email id does not exist")
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+            x = msg.exec_()
+
 class SignUpWindow(QDialog):
     def __init__(self):
         super(SignUpWindow, self).__init__()
@@ -488,6 +514,8 @@ class SignUpWindow(QDialog):
         # Constrain Input
         validator = QtGui.QRegExpValidator(QtCore.QRegExp(r'[0-9]{10}'))
         self.contact.setValidator(validator)
+
+        self.devInfo.clicked.connect(goToDevInfoWindow)
 
     def SignUp(self):
         name_ = self.name.toPlainText()
@@ -543,6 +571,48 @@ class HomeWindow(QMainWindow):
         self.home.clicked.connect(goToHome)
         self.login_signUp.clicked.connect(goToLoginWindow)
 
+class ForgotPasswordWindow(QMainWindow):
+    def __init__(self):
+        super(ForgotPasswordWindow, self).__init__()
+        loadUi("ForgotPasswordWindow.ui", self)
+        self.resetPassword.clicked.connect(self.updatePassword)
+
+    def updatePassword(self):
+        if self.nPassword.text() == self.cPassword.text():
+            with open("data.json", 'r+') as f:
+                obj = json.load(f)
+
+            obj["details"][str(resetEmail)]["Password"] = self.nPassword.text()
+
+            with open("data.json", "w") as f:
+                json.dump(obj, f)
+            msg = QtWidgets.QMessageBox()
+            msg.setWindowTitle('Password Reset')
+            msg.setText(f"Your password for the email id {resetEmail} has been successfully reset")
+            msg.setIcon(QtWidgets.QMessageBox.Information)
+            msg.exec_()
+
+            goToLoginWindow()
+
+        else:
+            msg = QtWidgets.QMessageBox()
+            msg.setWindowTitle('Passwords unmatch')
+            msg.setText(f"You appeared to have written different passwords.")
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+            msg.exec_()
+            self.eraseLabels()
+
+    def eraseLabels(self):
+        self.nPassword.clear()
+        self.cPassword.clear()
+
+class DevInfoWindow(QMainWindow):
+    def __init__(self):
+        super(DevInfoWindow, self).__init__()
+        loadUi("DevInfo.ui", self)
+        self.home.clicked.connect(goToHome)
+        self.login_signUp.clicked.connect(goToLoginWindow)
+
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     stackWidget = QtWidgets.QStackedWidget()
@@ -557,12 +627,17 @@ if __name__ == "__main__":
     signUpWindow.setWindowTitle("Attendance Record Management System")
     homeWindow = HomeWindow()
     homeWindow.setWindowTitle("Attendance Record Management System")
-
+    forgotPasswordWindow = ForgotPasswordWindow()
+    forgotPasswordWindow.setWindowTitle("Attendance Record Management System")
+    devInfoWindow = DevInfoWindow()
+    devInfoWindow.setWindowTitle("Attendance Record Management System")
 
     stackWidget.addWidget(loginWindow)
     stackWidget.addWidget(signUpWindow)
     stackWidget.addWidget(MainWindow)
     stackWidget.addWidget(homeWindow)
+    stackWidget.addWidget(forgotPasswordWindow)
+    stackWidget.addWidget(devInfoWindow)
     stackWidget.setFixedHeight(500)
     stackWidget.setFixedWidth(800)
 
