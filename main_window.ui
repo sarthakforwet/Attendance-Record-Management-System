@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>688</width>
-    <height>439</height>
+    <width>740</width>
+    <height>440</height>
    </rect>
   </property>
   <property name="maximumSize">
@@ -921,7 +921,7 @@
    <widget class="QPushButton" name="devInfo">
     <property name="geometry">
      <rect>
-      <x>600</x>
+      <x>660</x>
       <y>380</y>
       <width>75</width>
       <height>23</height>
@@ -1131,6 +1131,19 @@
     </property>
     <property name="flat">
      <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton">
+    <property name="geometry">
+     <rect>
+      <x>680</x>
+      <y>50</y>
+      <width>51</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Log out</string>
     </property>
    </widget>
   </widget>

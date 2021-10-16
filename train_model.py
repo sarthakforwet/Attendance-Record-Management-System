@@ -6,7 +6,7 @@ import os, time, random, json
 from sklearn.preprocessing import LabelEncoder
 import pickle
 
-f = open("../Encodings.json", "r")
+f = open("Encodings.json", "r")
 data = json.load(f)
 
 lbl = LabelEncoder()
