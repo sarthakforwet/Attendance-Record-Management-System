@@ -9,36 +9,92 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QDialog, QMainWindow
+from PyQt5.QtWidgets import QDialog, QMainWindow, QMessageBox
 from PyQt5.uic import loadUi
-from PyQt5.QtCore import QPropertyAnimation
+from PyQt5.QtCore import QPropertyAnimation, QThread, pyqtSignal, Qt
 import os, sys, random, time, json
-import threading, re
+import threading, re, cv2
 from appUtil import AttendanceManager
-from PyQt5.QtGui import QValidator
+from PyQt5.QtGui import QValidator, QImage, QPixmap
+
 
 # Shift screens
 def goToHome():
-    stackWidget.setCurrentIndex(3)
-
-def goToLoginWindow():
     stackWidget.setCurrentIndex(0)
 
-def goToSignUpWindow(self):
+def goToLoginWindow():
+    print("heerw")
     stackWidget.setCurrentIndex(1)
 
-def goToForgotPasswordWindow(email):
-    global resetEmail
-    resetEmail = email
+def goToSignUpWindow():
+    stackWidget.setCurrentIndex(2)
+
+def goToConfigWindow():
+        stackWidget.setCurrentIndex(3)
+
+def goToForgotPasswordWindow(var, fileName):
+    global resetVar, FileName
+    resetVar = var
+    FileName = fileName
     stackWidget.setCurrentIndex(4)
 
 def goToDevInfoWindow():
     stackWidget.setCurrentIndex(5)
 
+def goToStudentLoginWindow():
+    stackWidget.setCurrentIndex(6)
+
+def goToStudentSignUpWindow():
+    stackWidget.setCurrentIndex(7)
+
+def goToDataCollectionWindow():
+    stackWidget.setCurrentIndex(8)
+
+def goToShowImagesWindow():
+    stackWidget.setCurrentIndex(9)
+
+# Util functions
+def checkFacultyLoginStats(self):
+    if not facultyloggedIn_:
+        goToLoginWindow()
+    else:
+        goToConfigWindow()
+
+def checkStudentLoginStats(self):
+    if not studentloggedIn_:
+        goToStudentLoginWindow()
+    else:
+        goToDataCollectionWindow()
+
+def resetPassword(window):
+        try:
+            window.enrollNum
+            fileName = "studentData.json"
+            keyWord = "Enrollment Number"
+        except:
+            fileName = "data.json"
+            keyWord = "Email Address"
+
+        var, _ = QtWidgets.QInputDialog.getText(window, f"Enter your {keyWord}", f"Enter your {keyWord} to validate with the database.")
+
+        # Check if variable exists
+        with open(fileName, "r+") as f:
+                obj = json.load(f)
+
+        if var in obj["details"].keys():
+                goToForgotPasswordWindow(var, fileName)
+        else:
+            msg = QtWidgets.QMessageBox()
+            msg.setWindowTitle("Id not exists!")
+            msg.setText("Profile corresponding to the entered id does not exist")
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+            x = msg.exec_()
+
+
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(737, 439)
+        MainWindow.resize(740, 440)
         MainWindow.setMaximumSize(QtCore.QSize(800, 600))
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
@@ -64,55 +120,18 @@ class Ui_MainWindow(object):
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setAutoFillBackground(False)
         self.centralwidget.setObjectName("centralwidget")
-        self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
-        self.gridLayout.setSizeConstraint(QtWidgets.QLayout.SetDefaultConstraint)
-        self.gridLayout.setContentsMargins(9, 9, 3, 9)
-        self.gridLayout.setSpacing(9)
-        self.gridLayout.setObjectName("gridLayout")
         self.label_8 = QtWidgets.QLabel(self.centralwidget)
-        self.label_8.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_8.setObjectName("label_8")
-        self.gridLayout.addWidget(self.label_8, 8, 0, 1, 1)
-        #self.login_signUp = QtWidgets.QPushButton(self.centralwidget)
-        palette = QtGui.QPalette()
-        brush = QtGui.QBrush(QtGui.QColor(170, 0, 0))
-        brush.setStyle(QtCore.Qt.SolidPattern)
-        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush)
-        brush = QtGui.QBrush(QtGui.QColor(170, 0, 0))
-        brush.setStyle(QtCore.Qt.SolidPattern)
-        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Text, brush)
-        brush = QtGui.QBrush(QtGui.QColor(170, 0, 0))
-        brush.setStyle(QtCore.Qt.SolidPattern)
-        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ButtonText, brush)
-        brush = QtGui.QBrush(QtGui.QColor(170, 0, 0))
-        brush.setStyle(QtCore.Qt.SolidPattern)
-        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
-        brush = QtGui.QBrush(QtGui.QColor(170, 0, 0))
-        brush.setStyle(QtCore.Qt.SolidPattern)
-        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Text, brush)
-        brush = QtGui.QBrush(QtGui.QColor(170, 0, 0))
-        brush.setStyle(QtCore.Qt.SolidPattern)
-        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ButtonText, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
-        brush.setStyle(QtCore.Qt.SolidPattern)
-        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
-        brush.setStyle(QtCore.Qt.SolidPattern)
-        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Text, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
-        brush.setStyle(QtCore.Qt.SolidPattern)
-        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
-        #self.login_signUp.setPalette(palette)
+        self.label_8.setGeometry(QtCore.QRect(20, 260, 161, 16))
         font = QtGui.QFont()
-        font.setFamily("Arial")
-        font.setPointSize(10)
+        font.setFamily("Segoe Print")
+        font.setPointSize(11)
         font.setBold(True)
         font.setWeight(75)
-        #self.login_signUp.setFont(font)
-        #self.login_signUp.setFlat(True)
-        #self.login_signUp.setObjectName("login_signUp")
-        #self.gridLayout.addWidget(self.login_signUp, 1, 1, 1, 1)
+        self.label_8.setFont(font)
+        self.label_8.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_8.setObjectName("label_8")
         self.home = QtWidgets.QPushButton(self.centralwidget)
+        self.home.setGeometry(QtCore.QRect(9, 9, 300, 24))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -143,14 +162,14 @@ class Ui_MainWindow(object):
         self.home.setDefault(False)
         self.home.setFlat(True)
         self.home.setObjectName("home")
-        self.gridLayout.addWidget(self.home, 1, 0, 1, 1)
         self.duration = QtWidgets.QSpinBox(self.centralwidget)
+        self.duration.setGeometry(QtCore.QRect(250, 200, 111, 20))
         self.duration.setCorrectionMode(QtWidgets.QAbstractSpinBox.CorrectToPreviousValue)
         self.duration.setMaximum(120)
         self.duration.setDisplayIntegerBase(10)
         self.duration.setObjectName("duration")
-        self.gridLayout.addWidget(self.duration, 6, 1, 1, 1)
         self.submitAndRun = QtWidgets.QPushButton(self.centralwidget)
+        self.submitAndRun.setGeometry(QtCore.QRect(250, 300, 124, 29))
         font = QtGui.QFont()
         font.setFamily("Palatino Linotype")
         font.setPointSize(12)
@@ -159,59 +178,83 @@ class Ui_MainWindow(object):
         font.setWeight(75)
         self.submitAndRun.setFont(font)
         self.submitAndRun.setObjectName("submitAndRun")
-        self.gridLayout.addWidget(self.submitAndRun, 9, 1, 1, 1)
         self.label_3 = QtWidgets.QLabel(self.centralwidget)
+        self.label_3.setGeometry(QtCore.QRect(20, 110, 131, 21))
+        font = QtGui.QFont()
+        font.setFamily("Segoe Print")
+        font.setPointSize(11)
+        font.setBold(True)
+        font.setWeight(75)
+        self.label_3.setFont(font)
         self.label_3.setAlignment(QtCore.Qt.AlignCenter)
         self.label_3.setObjectName("label_3")
-        self.gridLayout.addWidget(self.label_3, 3, 0, 1, 1)
         self.mode = QtWidgets.QComboBox(self.centralwidget)
+        self.mode.setGeometry(QtCore.QRect(250, 110, 104, 21))
         self.mode.setObjectName("mode")
         self.mode.addItem("")
         self.mode.addItem("")
-        self.gridLayout.addWidget(self.mode, 3, 1, 1, 1)
         self.label_6 = QtWidgets.QLabel(self.centralwidget)
+        self.label_6.setGeometry(QtCore.QRect(20, 200, 211, 16))
+        font = QtGui.QFont()
+        font.setFamily("Segoe Print")
+        font.setPointSize(11)
+        font.setBold(True)
+        font.setWeight(75)
+        self.label_6.setFont(font)
         self.label_6.setAlignment(QtCore.Qt.AlignCenter)
         self.label_6.setObjectName("label_6")
-        self.gridLayout.addWidget(self.label_6, 6, 0, 1, 1)
         self.moe = QtWidgets.QComboBox(self.centralwidget)
+        self.moe.setGeometry(QtCore.QRect(250, 260, 111, 20))
         self.moe.setObjectName("moe")
         self.moe.addItem("")
         self.moe.addItem("")
-        self.gridLayout.addWidget(self.moe, 8, 1, 1, 1)
         self.label_7 = QtWidgets.QLabel(self.centralwidget)
+        self.label_7.setGeometry(QtCore.QRect(20, 230, 131, 20))
+        font = QtGui.QFont()
+        font.setFamily("Segoe Print")
+        font.setPointSize(11)
+        font.setBold(True)
+        font.setWeight(75)
+        self.label_7.setFont(font)
         self.label_7.setAlignment(QtCore.Qt.AlignCenter)
         self.label_7.setObjectName("label_7")
-        self.gridLayout.addWidget(self.label_7, 7, 0, 1, 1)
         self.label_4 = QtWidgets.QLabel(self.centralwidget)
+        self.label_4.setGeometry(QtCore.QRect(20, 140, 91, 16))
+        font = QtGui.QFont()
+        font.setFamily("Segoe Print")
+        font.setPointSize(11)
+        font.setBold(True)
+        font.setWeight(75)
+        self.label_4.setFont(font)
         self.label_4.setAlignment(QtCore.Qt.AlignCenter)
         self.label_4.setObjectName("label_4")
-        self.gridLayout.addWidget(self.label_4, 4, 0, 1, 1)
         self.label_5 = QtWidgets.QLabel(self.centralwidget)
+        self.label_5.setGeometry(QtCore.QRect(20, 170, 121, 20))
         self.label_5.setMaximumSize(QtCore.QSize(300, 300))
+        font = QtGui.QFont()
+        font.setFamily("Segoe Print")
+        font.setPointSize(11)
+        font.setBold(True)
+        font.setWeight(75)
+        self.label_5.setFont(font)
         self.label_5.setAlignment(QtCore.Qt.AlignCenter)
         self.label_5.setObjectName("label_5")
-        self.gridLayout.addWidget(self.label_5, 5, 0, 1, 1)
         self.lineEdit = QtWidgets.QLineEdit(self.centralwidget)
+        self.lineEdit.setGeometry(QtCore.QRect(250, 140, 111, 20))
         self.lineEdit.setMaximumSize(QtCore.QSize(200, 16777215))
         self.lineEdit.setObjectName("lineEdit")
-        self.gridLayout.addWidget(self.lineEdit, 4, 1, 1, 1)
         self.nSnips = QtWidgets.QComboBox(self.centralwidget)
+        self.nSnips.setGeometry(QtCore.QRect(250, 230, 111, 20))
         self.nSnips.setObjectName("nSnips")
         self.nSnips.addItem("")
         self.nSnips.addItem("")
         self.nSnips.addItem("")
-        self.gridLayout.addWidget(self.nSnips, 7, 1, 1, 1)
         self.lineEdit_2 = QtWidgets.QLineEdit(self.centralwidget)
+        self.lineEdit_2.setGeometry(QtCore.QRect(250, 170, 111, 20))
         self.lineEdit_2.setMaximumSize(QtCore.QSize(200, 16777215))
         self.lineEdit_2.setObjectName("lineEdit_2")
-        self.gridLayout.addWidget(self.lineEdit_2, 5, 1, 1, 1)
-        self.pushButton_2 = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_2.setEnabled(False)
-        self.pushButton_2.setFocusPolicy(QtCore.Qt.ClickFocus)
-        self.pushButton_2.setFlat(True)
-        self.pushButton_2.setObjectName("pushButton_2")
-        self.gridLayout.addWidget(self.pushButton_2, 10, 2, 1, 1)
         self.head = QtWidgets.QLabel(self.centralwidget)
+        self.head.setGeometry(QtCore.QRect(9, 50, 319, 40))
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(209, 31, 209))
         brush.setStyle(QtCore.Qt.SolidPattern)
@@ -359,7 +402,78 @@ class Ui_MainWindow(object):
         self.head.setScaledContents(True)
         self.head.setWordWrap(True)
         self.head.setObjectName("head")
-        self.gridLayout.addWidget(self.head, 2, 0, 1, 1)
+        self.devInfo = QtWidgets.QPushButton(self.centralwidget)
+        self.devInfo.setGeometry(QtCore.QRect(660, 380, 75, 23))
+        palette = QtGui.QPalette()
+        brush = QtGui.QBrush(QtGui.QColor(0, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Button, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Light, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 127))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Dark, brush)
+        brush = QtGui.QBrush(QtGui.QColor(0, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Mid, brush)
+        brush = QtGui.QBrush(QtGui.QColor(0, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Text, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ButtonText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(0, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Button, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Light, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 127))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Dark, brush)
+        brush = QtGui.QBrush(QtGui.QColor(0, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Mid, brush)
+        brush = QtGui.QBrush(QtGui.QColor(0, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Text, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ButtonText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 127))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Button, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Light, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 127))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Dark, brush)
+        brush = QtGui.QBrush(QtGui.QColor(0, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Mid, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 127))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Text, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 127))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
+        self.devInfo.setPalette(palette)
+        self.devInfo.setFlat(True)
+        self.devInfo.setObjectName("devInfo")
+        self.pushButton = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton.setGeometry(QtCore.QRect(680, 50, 51, 31))
+        self.pushButton.setObjectName("pushButton")
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
@@ -369,6 +483,11 @@ class Ui_MainWindow(object):
         self.copy = QtWidgets.QAction(MainWindow)
         self.copy.setObjectName("copy")
 
+        self.retranslateUi(MainWindow)
+        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+        # Our Changes
+
         # Change Bg Color
         MainWindow.setStyleSheet("QMainWindow {background-color:#c8d6e4;}")
         self.retranslateUi(MainWindow)
@@ -376,13 +495,15 @@ class Ui_MainWindow(object):
 
         # Backend stuff
         self.submitAndRun.clicked.connect(self.runApp)
+        self.home.clicked.connect(goToHome)
+        self.devInfo.clicked.connect(goToDevInfoWindow)
+        #self.logOut.clicked.connect(self.LogOut)
         #self.devInfo.clicked.connect(goToDevInfoWindow)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Attendance Record Management System"))
         self.label_8.setText(_translate("MainWindow", "Method of Evaluation"))
-        #self.login_signUp.setText(_translate("MainWindow", "Login/SignUp"))
         self.home.setText(_translate("MainWindow", "Home"))
         self.duration.setSpecialValueText(_translate("MainWindow", "40"))
         self.submitAndRun.setText(_translate("MainWindow", "Submit and Run"))
@@ -398,8 +519,9 @@ class Ui_MainWindow(object):
         self.nSnips.setItemText(0, _translate("MainWindow", "1"))
         self.nSnips.setItemText(1, _translate("MainWindow", "3"))
         self.nSnips.setItemText(2, _translate("MainWindow", "5"))
-        self.pushButton_2.setText(_translate("MainWindow", "Developer Info"))
         self.head.setText(_translate("MainWindow", "Enter the Configurations"))
+        self.devInfo.setText(_translate("MainWindow", "Dev Info"))
+        self.pushButton.setText(_translate("MainWindow", "Log out"))
         self.actionNew.setText(_translate("MainWindow", "New"))
         self.actionNew.setStatusTip(_translate("MainWindow", "Ne w File can be created"))
         self.actionNew.setShortcut(_translate("MainWindow", "Ctrl+N"))
@@ -423,8 +545,6 @@ class Ui_MainWindow(object):
         else:
             # Send critical message
             raise ValueError("Mode not found!")
-        #os.system(f'python app.py -t {meetDuration} -s {nSnips} -cls {clsName} -clsName "{meetName}"')
-
 
 class LoginWindow(QDialog):
     def __init__(self):
@@ -436,10 +556,9 @@ class LoginWindow(QDialog):
         self.SignUp.clicked.connect(goToSignUpWindow)
         self.loginBtn.clicked.connect(self.verifyAndLogin)
         self.home.clicked.connect(goToHome)
-        self.login_signUp.clicked.connect(goToLoginWindow)
-        self.forgotPassBtn.clicked.connect(self.resetPassword)
+        #self.login_signUp.clicked.connect(goToLoginWindow)
+        self.forgotPassBtn.clicked.connect(lambda: resetPassword(self))
         self.devInfo.clicked.connect(goToDevInfoWindow)
-
 
     def verifyAndLogin(self):
         email = self.email_id.toPlainText()
@@ -451,7 +570,9 @@ class LoginWindow(QDialog):
 
         if(email in data['details'].keys()):
             if(password == data['details'][str(email)]['Password']):
-                self.goToConfigWindow()
+                global facultyloggedIn_
+                facultyloggedIn_ = True
+                goToConfigWindow()
             else:
                 error_ = 1
         else:
@@ -463,14 +584,11 @@ class LoginWindow(QDialog):
             msg.setText("You appeared to have entered wrong email/password")
             msg.setIcon(QtWidgets.QMessageBox.Critical)
             x = msg.exec_()
-            self.eraseLabels()
+        self.eraseLabels()
 
     def eraseLabels(self):
         self.email_id.clear()
         self.password.clear()
-
-    def goToConfigWindow(self):
-        stackWidget.setCurrentIndex(2)
 
     def updateText(self):
         with open("textSnippets.txt", "r") as f:
@@ -484,22 +602,6 @@ class LoginWindow(QDialog):
                 time.sleep(5)
                 self.anim.setDuration(200)
 
-    def resetPassword(self):
-        email, _ = QtWidgets.QInputDialog.getText(self, "Enter email address", "Enter your email address to validate.")
-
-        # Check if email exists
-        with open("data.json", "r+") as f:
-            obj = json.load(f)
-
-        if email in obj["details"].keys():
-            goToForgotPasswordWindow(email)
-        else:
-            msg = QtWidgets.QMessageBox()
-            msg.setWindowTitle("Email id not exists!")
-            msg.setText("Profile corresponding to the entered email id does not exist")
-            msg.setIcon(QtWidgets.QMessageBox.Critical)
-            x = msg.exec_()
-
 class SignUpWindow(QDialog):
     def __init__(self):
         super(SignUpWindow, self).__init__()
@@ -509,7 +611,7 @@ class SignUpWindow(QDialog):
 
         self.signUp.clicked.connect(self.SignUp)
         self.home.clicked.connect(goToHome)
-        self.login_signUp.clicked.connect(goToLoginWindow)
+        self.login.clicked.connect(goToLoginWindow)
 
         # Constrain Input
         validator = QtGui.QRegExpValidator(QtCore.QRegExp(r'[0-9]{10}'))
@@ -569,7 +671,8 @@ class HomeWindow(QMainWindow):
         super(HomeWindow, self).__init__()
         loadUi("HomeWindow.ui", self)
         self.home.clicked.connect(goToHome)
-        self.login_signUp.clicked.connect(goToLoginWindow)
+        self.student.clicked.connect(checkStudentLoginStats)
+        self.faculty.clicked.connect(checkFacultyLoginStats)
 
 class ForgotPasswordWindow(QMainWindow):
     def __init__(self):
@@ -579,20 +682,23 @@ class ForgotPasswordWindow(QMainWindow):
 
     def updatePassword(self):
         if self.nPassword.text() == self.cPassword.text():
-            with open("data.json", 'r+') as f:
+            with open(FileName, 'r+') as f:
                 obj = json.load(f)
 
-            obj["details"][str(resetEmail)]["Password"] = self.nPassword.text()
+            obj["details"][str(resetVar)]["Password"] = self.nPassword.text()
 
-            with open("data.json", "w") as f:
+            with open(FileName, "w") as f:
                 json.dump(obj, f)
             msg = QtWidgets.QMessageBox()
             msg.setWindowTitle('Password Reset')
-            msg.setText(f"Your password for the email id {resetEmail} has been successfully reset")
+            msg.setText(f"Your password for the id {resetVar} has been successfully reset")
             msg.setIcon(QtWidgets.QMessageBox.Information)
             msg.exec_()
 
-            goToLoginWindow()
+            if FileName=="studentData.json":
+                goToStudentLoginWindow()
+            else:
+                goToLoginWindow()
 
         else:
             msg = QtWidgets.QMessageBox()
@@ -600,7 +706,7 @@ class ForgotPasswordWindow(QMainWindow):
             msg.setText(f"You appeared to have written different passwords.")
             msg.setIcon(QtWidgets.QMessageBox.Critical)
             msg.exec_()
-            self.eraseLabels()
+        self.eraseLabels()
 
     def eraseLabels(self):
         self.nPassword.clear()
@@ -611,9 +717,221 @@ class DevInfoWindow(QMainWindow):
         super(DevInfoWindow, self).__init__()
         loadUi("DevInfo.ui", self)
         self.home.clicked.connect(goToHome)
-        self.login_signUp.clicked.connect(goToLoginWindow)
+        self.faculty.clicked.connect(checkFacultyLoginStats)
+        self.student.clicked.connect(checkStudentLoginStats)
+
+class StudentLoginWindow(QMainWindow):
+    def __init__(self):
+        super(StudentLoginWindow, self).__init__()
+        loadUi("StudentLoginWindow.ui", self)
+        self.home.clicked.connect(goToHome)
+        self.loginBtn.clicked.connect(self.verifyAndLogin)
+        self.SignUp.clicked.connect(goToStudentSignUpWindow)
+        self.forgotPassBtn.clicked.connect(lambda: resetPassword(self))
+        self.devInfo.clicked.connect(goToDevInfoWindow)
+
+    def verifyAndLogin(self):
+        enroll = self.enrollNum.toPlainText()
+        password = self.password.text()
+        error_ = 0
+        with open('studentData.json','r+') as f:
+            data=json.load(f)
+
+        if(enroll in data['details'].keys()):
+            if(password == data['details'][str(enroll)]['Password']):
+                global studentloggedIn_, currentEnroll_, clsName_
+                studentloggedIn_ = True
+                currentEnroll_ = enroll
+                clsName_ = data["details"][enroll]["Class"]
+                goToDataCollectionWindow()
+            else:
+                error_ = 1
+        else:
+            error_ = 1
+
+        if error_:
+            msg = QtWidgets.QMessageBox()
+            msg.setWindowTitle("Login Credentials Invalid")
+            msg.setText("You appeared to have entered wrong enroll/password")
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+            x = msg.exec_()
+        self.eraseLabels()
+
+    def eraseLabels(self):
+        self.enrollNum.clear()
+        self.password.clear()
+
+class StudentSignUpWindow(QMainWindow):
+    def __init__(self):
+        super(StudentSignUpWindow, self).__init__()
+        loadUi("StudentSignUpWindow.ui", self)
+
+        self.signUp.clicked.connect(self.SignUp)
+        self.home.clicked.connect(goToHome)
+        self.login.clicked.connect(goToStudentLoginWindow)
+
+        # Constrain Input
+        validator = QtGui.QRegExpValidator(QtCore.QRegExp(r'[0-9]{10}'))
+        self.contact.setValidator(validator)
+
+        self.devInfo.clicked.connect(goToDevInfoWindow)
+
+    def SignUp(self):
+        name_ = self.name.toPlainText()
+        email_id_ = self.email_id.toPlainText()
+        enrollNum = self.enrollNum.toPlainText()
+        global clsName_
+        clsName_ = self.clsName.toPlainText()
+
+        regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+        if not re.fullmatch(regex, email_id_):
+            msg = QtWidgets.QMessageBox()
+            msg.setWindowTitle("Email invalid!")
+            msg.setText("The entered email address is not a valid one!")
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+            _ = msg.exec_()
+            self.eraseLabels()
+            return
+
+        number_ = self.contact.text()
+        pwd1 = self.password.text()
+        pwd2 = self.cPassword.text()
+
+        if(pwd1==pwd2):
+            with open('studentData.json','r+') as fil:
+                ob1=json.load(fil)
+
+            if enrollNum in ob1["details"].keys():
+                msg = QtWidgets.QMessageBox()
+                msg.setWindowTitle("Enrollment Number already present")
+                msg.setText("The entered enrollment number is already taken up. Please enter a unique enrollment number")
+                msg.setIcon(QtWidgets.QMessageBox.Critical)
+                _ = msg.exec_()
+                self.eraseLabels()
+                return
+
+            ob1['details'][enrollNum]={'Name':name_,'Contact_number':number_,'Password':pwd1, 'email_id':email_id_, 'Class':clsName_}
+            with open("studentData.json", "w") as f:
+                json.dump(ob1,f)
+
+            # Make dataset directory for the particular student
+            if not os.path.exists(f"Dataset/{clsName_}/{enrollNum}"):
+                os.makedirs(f"Dataset/{clsName_}/{enrollNum}")
+
+            goToStudentLoginWindow()
+
+        else:
+            msg = QtWidgets.QMessageBox()
+            msg.setWindowTitle("Passwords Don't Match")
+            msg.setText("The entered passwords don't match. Try it again.")
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+            _ = msg.exec_()
+        self.eraseLabels()
+
+    def eraseLabels(self):
+        self.name.clear()
+        self.email_id.clear()
+        self.contact.clear()
+        self.password.clear()
+        self.cPassword.clear()
+        self.enrollNum.clear()
+        self.clsName.clear()
+
+class DataCollectionWindow(QMainWindow):
+    def __init__(self, imgPtr: int=0):
+        if not imgPtr:
+            self.imgPtr = 0
+        else:
+            self.imgPtr = imgPtr
+        super(DataCollectionWindow, self).__init__()
+        loadUi("DataCollectionWindow.ui", self)
+        self.worker1 = self.Worker1()
+        self.worker1.start()
+        self.worker1.ImageUpdate.connect(self.ImageUpdateSlot)
+        self.capture.clicked.connect(self.askAndSave)
+        self.home.clicked.connect(goToHome)
+        self.devInfo.clicked.connect(goToDevInfoWindow)
+        self.showImages.clicked.connect(self.showCurrentImages)
+
+    def showCurrentImages(self):
+        if currentEnroll_!="":
+            images = os.listdir(f"Dataset/{clsName_}/{currentEnroll_}")
+            labels = [showImagesWindow.lbl1, showImagesWindow.lbl2, showImagesWindow.lbl3, showImagesWindow.lbl4, showImagesWindow.lbl5,
+                    showImagesWindow.lbl6, showImagesWindow.lbl7, showImagesWindow.lbl8, showImagesWindow.lbl9, showImagesWindow.lbl10]
+            for i, lbl in zip(range(len(images)), labels):
+                im = QPixmap(f"Dataset/{clsName_}/{currentEnroll_}/{i+1}.png")
+                lbl.setPixmap(im)
+                lbl.setScaledContents(True)
+                lbl.show()
+
+        goToShowImagesWindow()
+
+    def askAndSave(self):
+        if self.imgPtr <= 10:
+            msg = QMessageBox()
+            msg.setWindowTitle("Are you sure you wanna save this pic?")
+            msg.setText("The taken picture would be stored for training.")
+            msg.setStandardButtons(QMessageBox.Save | QMessageBox.Cancel)
+            x = msg.exec_()
+            if x==QMessageBox.Save:
+                img = cv2.flip(self.worker1.frame, 1)
+                cv2.imwrite(f"./Dataset/{clsName_}/{currentEnroll_}/{self.imgPtr+1}.png", img)
+                self.CurrentImg.setText(f"Img {self.imgPtr}.png has been updated successfully")
+                self.CurrentImg.adjustSize()
+                self.imgPtr+=1
+            else:
+                print("Cancelled!")
+                pass
+
+        else:
+            msg = QMessageBox()
+            msg.setWindowTitle("All images have been added!")
+            msg.setText("All 10 Images have been added. If you wanna update some of them, click on 'Show Images' button.")
+            msg.setIcon(QMessageBox.Critial)
+            x = msg.exec_()
+
+    def ImageUpdateSlot(self, Image):
+        self.videoFrame.setPixmap(QPixmap.fromImage(Image))
+        self.videoFrame.setScaledContents(True)
+
+    class Worker1(QThread):
+        ImageUpdate = pyqtSignal(QImage)
+        def run(self):
+            self.ThreadActive = True
+            Capture = cv2.VideoCapture(0)
+            while self.ThreadActive:
+                ret, frame = Capture.read()
+                if ret:
+                    self.frame = frame
+                    Image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                    flippedImage = cv2.flip(Image, 1)
+                    qtFormatImage = QImage(flippedImage.data, flippedImage.shape[1], flippedImage.shape[0], QImage.Format_RGB888)
+                    img = qtFormatImage.scaled(640, 480, Qt.KeepAspectRatio)
+                    self.ImageUpdate.emit(img)
+
+        def stop(self):
+            self.ThreadActive = False
+
+class ShowImagesWindow(QMainWindow):
+    def __init__(self):
+        super(ShowImagesWindow, self).__init__()
+        loadUi("ShowImagesWindow.ui", self)
+        self.back.clicked.connect(goToDataCollectionWindow)
+        self.updatePic.clicked.connect(self.changePic)
+
+    def changePic(self):
+        dataCollectionWindow.imgPtr = int(self.changePicBox.currentText()) - 1
+        goToDataCollectionWindow()
 
 if __name__ == "__main__":
+
+    # Global Config
+    facultyloggedIn_ = False
+    studentloggedIn_ = False
+    currentEnroll_ = ""
+    currentEmail_ = ""
+    clsName_ = ""
+
     app = QtWidgets.QApplication(sys.argv)
     stackWidget = QtWidgets.QStackedWidget()
     MainWindow = QtWidgets.QMainWindow()
@@ -631,15 +949,24 @@ if __name__ == "__main__":
     forgotPasswordWindow.setWindowTitle("Attendance Record Management System")
     devInfoWindow = DevInfoWindow()
     devInfoWindow.setWindowTitle("Attendance Record Management System")
+    studentSignUpWindow = StudentSignUpWindow()
+    studentLoginWindow = StudentLoginWindow()
+    dataCollectionWindow = DataCollectionWindow()
+    showImagesWindow = ShowImagesWindow()
 
+    stackWidget.addWidget(homeWindow)
     stackWidget.addWidget(loginWindow)
     stackWidget.addWidget(signUpWindow)
     stackWidget.addWidget(MainWindow)
-    stackWidget.addWidget(homeWindow)
     stackWidget.addWidget(forgotPasswordWindow)
     stackWidget.addWidget(devInfoWindow)
-    stackWidget.setFixedHeight(500)
-    stackWidget.setFixedWidth(800)
+    stackWidget.addWidget(studentLoginWindow)
+    stackWidget.addWidget(studentSignUpWindow)
+    stackWidget.addWidget(dataCollectionWindow)
+    stackWidget.addWidget(showImagesWindow)
+
+    stackWidget.setFixedHeight(440)
+    stackWidget.setFixedWidth(740)
 
     stackWidget.show()
     #print(app._running())
