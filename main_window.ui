@@ -418,7 +418,7 @@
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QLineEdit" name="lineEdit">
+   <widget class="QLineEdit" name="clsName">
     <property name="geometry">
      <rect>
       <x>250</x>
@@ -459,7 +459,7 @@
      </property>
     </item>
    </widget>
-   <widget class="QLineEdit" name="lineEdit_2">
+   <widget class="QLineEdit" name="meetName">
     <property name="geometry">
      <rect>
       <x>250</x>
