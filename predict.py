@@ -36,27 +36,44 @@ def predict_video(filename: str):
 
 #cap = cv2.VideoCapture("../test_video2.mp4")
 
-def predict_pic(img_path: str):
-    img = cv2.imread(img_path)
-    #img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    #cv2.imshow("Testing",img)
-    boxes = face_recognition.face_locations(img)
-    embeddings = face_recognition.face_encodings(img, boxes)
-    names = []
-    scores = []
-    for embedding, (top, right, bottom, left) in zip(embeddings, boxes):
-        embedding = np.expand_dims(embedding, axis=0)
-        #print(model.predict_proba(embedding))
-        cls = np.argmax(model.predict_proba(embedding))
-        score = np.max(model.predict_proba(embedding))
-        if score > 0.9:
-            scores.append(score)
-            names.append(le.classes_[cls])
-            #cv2.rectangle(img, (left, top), (right, bottom), (255, 0, 0), cv2.FONT_HERSHEY_COMPLEX)
+def predict_pic(img_path: str="", img=[]):
+    if img_path!="":
+        img = cv2.imread(img_path)
+        boxes = face_recognition.face_locations(img)
+        embeddings = face_recognition.face_encodings(img, boxes)
+        names = []
+        scores = []
+        for embedding, (top, right, bottom, left) in zip(embeddings, boxes):
+            embedding = np.expand_dims(embedding, axis=0)
+            #print(model.predict_proba(embedding))
+            cls = np.argmax(model.predict_proba(embedding))
+            score = np.max(model.predict_proba(embedding))
+            if score > 0.9:
+                scores.append(score)
+                names.append(le.classes_[cls])
 
-    #print(f"Scores: {scores}")
-    #print(f"Names: {names}")
-    return scores, names
+        return scores, names
+
+    elif img!=[]:
+        boxes = face_recognition.face_locations(img)
+        embeddings = face_recognition.face_encodings(img, boxes)
+        names = []
+        scores = []
+        for embedding, (top, right, bottom, left) in zip(embeddings, boxes):
+            embedding = np.expand_dims(embedding, axis=0)
+            cls = np.argmax(model.predict_proba(embedding))
+            score = np.max(model.predict_proba(embedding))
+            coordinates = []
+            if score > 0.9:
+                scores.append(score)
+                names.append(le.classes_[cls])
+                coordinates.append([left, top, right, bottom])
+
+        return scores, names, coordinates
+
+    else:
+        raise ValueError("No proper img informatin given!")
+
     #cv2.imshow('Prediction', img)
     #cv2.waitKey(0)
 
