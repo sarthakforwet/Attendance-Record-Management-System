@@ -6,22 +6,27 @@ import os, time, random, json
 from sklearn.preprocessing import LabelEncoder
 import pickle
 
-f = open("Encodings.json", "r")
-data = json.load(f)
+def train():
+    f = open("StudentEncodings.json", "r")
+    data = json.load(f)
+    data = data["details"]
+    NameList = []
+    Encodings = []
+    for k, v in data.items():
+        NameList.extend([k]*len(v))
+        Encodings.extend(v)
 
-lbl = LabelEncoder()
-labels = lbl.fit_transform(data["name"])
-#svm = SVC(kernel = "rbf", gamma=0.8, C=1.0, probability=True)
-knn = KNeighborsClassifier(n_neighbors=5, p=2, n_jobs=-1)
-print(np.unique(labels))
-knn.fit(data["encodings"], labels)
+    lbl = LabelEncoder()
+    labels = lbl.fit_transform(NameList)
+    #svm = SVC(kernel = "rbf", gamma=0.8, C=1.0, probability=True)
+    knn = KNeighborsClassifier(n_neighbors=5, p=2, n_jobs=-1)
+    print(np.unique(labels))
+    knn.fit(Encodings, labels)
 
+    model_file = open("model_knn.pickle", "wb")
+    model_file.write(pickle.dumps(knn))
 
-#svm.fit(data["encodings"], labels)
-model_file = open("model_knn.pickle", "wb")
-model_file.write(pickle.dumps(knn))
+    encoder_file = open("le.pickle", "wb")
+    encoder_file.write(pickle.dumps(lbl))
 
-encoder_file = open("le.pickle", "wb")
-encoder_file.write(pickle.dumps(lbl))
-
-model_file.close(); encoder_file.close()
+    model_file.close(); encoder_file.close()

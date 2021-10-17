@@ -453,7 +453,7 @@
          <x>436</x>
          <y>330</y>
          <width>271</width>
-         <height>81</height>
+         <height>91</height>
         </rect>
        </property>
        <property name="font">
@@ -462,7 +462,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Reference from the poses and take a total of 10 pictures with different angles so that your face could be learnt more effectively. Try to include all possible angles.</string>
+        <string>Reference from the poses and take a total of 10 pictures with different angles so that your face could be learnt more effectively. Try to include all possible angles. Only include such pics which gets detected.</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -508,6 +508,19 @@
        </property>
        <property name="text">
         <string/>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="train">
+       <property name="geometry">
+        <rect>
+         <x>340</x>
+         <y>390</y>
+         <width>75</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Train model</string>
        </property>
       </widget>
      </widget>
