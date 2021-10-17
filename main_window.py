@@ -14,8 +14,12 @@ from PyQt5.uic import loadUi
 from PyQt5.QtCore import QPropertyAnimation, QThread, pyqtSignal, Qt
 import os, sys, random, time, json
 import threading, re, cv2
-from appUtil import AttendanceManager
+from appUtil import AttendanceManager, StudentData
 from PyQt5.QtGui import QValidator, QImage, QPixmap
+import face_recognition
+import numpy as np
+from train_model import train
+from gCloudUtil import *
 
 
 # Shift screens
@@ -239,20 +243,20 @@ class Ui_MainWindow(object):
         self.label_5.setFont(font)
         self.label_5.setAlignment(QtCore.Qt.AlignCenter)
         self.label_5.setObjectName("label_5")
-        self.lineEdit = QtWidgets.QLineEdit(self.centralwidget)
-        self.lineEdit.setGeometry(QtCore.QRect(250, 140, 111, 20))
-        self.lineEdit.setMaximumSize(QtCore.QSize(200, 16777215))
-        self.lineEdit.setObjectName("lineEdit")
+        self.clsName = QtWidgets.QLineEdit(self.centralwidget)
+        self.clsName.setGeometry(QtCore.QRect(250, 140, 111, 20))
+        self.clsName.setMaximumSize(QtCore.QSize(200, 16777215))
+        self.clsName.setObjectName("clsName")
         self.nSnips = QtWidgets.QComboBox(self.centralwidget)
         self.nSnips.setGeometry(QtCore.QRect(250, 230, 111, 20))
         self.nSnips.setObjectName("nSnips")
         self.nSnips.addItem("")
         self.nSnips.addItem("")
         self.nSnips.addItem("")
-        self.lineEdit_2 = QtWidgets.QLineEdit(self.centralwidget)
-        self.lineEdit_2.setGeometry(QtCore.QRect(250, 170, 111, 20))
-        self.lineEdit_2.setMaximumSize(QtCore.QSize(200, 16777215))
-        self.lineEdit_2.setObjectName("lineEdit_2")
+        self.meetName = QtWidgets.QLineEdit(self.centralwidget)
+        self.meetName.setGeometry(QtCore.QRect(250, 170, 111, 20))
+        self.meetName.setMaximumSize(QtCore.QSize(200, 16777215))
+        self.meetName.setObjectName("meetName")
         self.head = QtWidgets.QLabel(self.centralwidget)
         self.head.setGeometry(QtCore.QRect(9, 50, 319, 40))
         palette = QtGui.QPalette()
@@ -531,8 +535,8 @@ class Ui_MainWindow(object):
 
     def runApp(self):
         mode = self.mode.currentText()
-        clsName = self.clsName.toPlainText()
-        meetName = self.meetName.toPlainText()
+        clsName = self.clsName.text()
+        meetName = self.meetName.text()
         meetDuration = int(self.duration.value())
         nSnips = int(self.nSnips.currentText())
         moe = self.moe.currentText()
@@ -561,12 +565,14 @@ class LoginWindow(QDialog):
         self.devInfo.clicked.connect(goToDevInfoWindow)
 
     def verifyAndLogin(self):
-        email = self.email_id.toPlainText()
+        email = self.email_id.toPlainText().lower()
         #password = QtWidgets.QLabel("password").text()
         password = self.password.text()
         error_ = 0
-        with open('data.json','r+') as f:
-            data=json.load(f)
+
+        data = getFileDataFromBucket("data.json")
+        #with open('data.json','r+') as f:
+        #    data=json.load(f)
 
         if(email in data['details'].keys()):
             if(password == data['details'][str(email)]['Password']):
@@ -637,8 +643,9 @@ class SignUpWindow(QDialog):
         pwd2 = self.cPassword.text()
 
         if(pwd1==pwd2):
-            with open('data.json','r+') as fil:
-                ob1=json.load(fil)
+            #with open('data.json','r+') as fil:
+            #    ob1=json.load(fil)
+            ob1 = getFileDataFromBucket("data.json")
 
             if email_id_ in ob1["details"].keys():
                 msg = QtWidgets.QMessageBox()
@@ -647,11 +654,13 @@ class SignUpWindow(QDialog):
                 msg.setIcon(QtWidgets.QMessageBox.Critical)
                 _ = msg.exec_()
 
-            ob1['details'][email_id_]={'Name':name_,'Contact_number':number_,'Password':pwd1}
-            with open("data.json", "w") as f:
-                json.dump(ob1,f)
+            ob1['details'][email_id_.lower()]={'Name':name_,'Contact_number':number_,'Password':pwd1}
 
-            self.goToLoginWindow()
+            #with open("data.json", "w") as f:
+            #    json.dump(ob1,f)
+            pushDataToBucket("data.json", ob1)
+
+            goToLoginWindow()
         else:
             msg = QtWidgets.QMessageBox()
             msg.setWindowTitle("Passwords Don't Match")
@@ -682,13 +691,16 @@ class ForgotPasswordWindow(QMainWindow):
 
     def updatePassword(self):
         if self.nPassword.text() == self.cPassword.text():
-            with open(FileName, 'r+') as f:
-                obj = json.load(f)
 
+            #with open(FileName, 'r+') as f:
+            #    obj = json.load(f)
+            obj = getFileDataFromBucket(FileName)
             obj["details"][str(resetVar)]["Password"] = self.nPassword.text()
 
-            with open(FileName, "w") as f:
-                json.dump(obj, f)
+            #with open(FileName, "w") as f:
+            #    json.dump(obj, f)
+            pushDataToBucket(Filename, obj)
+
             msg = QtWidgets.QMessageBox()
             msg.setWindowTitle('Password Reset')
             msg.setText(f"Your password for the id {resetVar} has been successfully reset")
@@ -734,8 +746,9 @@ class StudentLoginWindow(QMainWindow):
         enroll = self.enrollNum.toPlainText()
         password = self.password.text()
         error_ = 0
-        with open('studentData.json','r+') as f:
-            data=json.load(f)
+        #with open('studentData.json','r+') as f:
+        #    data=json.load(f)
+        data = getFileDataFromBucket("studentData.json")
 
         if(enroll in data['details'].keys()):
             if(password == data['details'][str(enroll)]['Password']):
@@ -798,8 +811,9 @@ class StudentSignUpWindow(QMainWindow):
         pwd2 = self.cPassword.text()
 
         if(pwd1==pwd2):
-            with open('studentData.json','r+') as fil:
-                ob1=json.load(fil)
+            #with open('studentData.json','r+') as fil:
+            #    ob1=json.load(fil)
+            ob1 = getFileDataFromBucket("studentData.json")
 
             if enrollNum in ob1["details"].keys():
                 msg = QtWidgets.QMessageBox()
@@ -811,8 +825,9 @@ class StudentSignUpWindow(QMainWindow):
                 return
 
             ob1['details'][enrollNum]={'Name':name_,'Contact_number':number_,'Password':pwd1, 'email_id':email_id_, 'Class':clsName_}
-            with open("studentData.json", "w") as f:
-                json.dump(ob1,f)
+            #with open("studentData.json", "w") as f:
+            #    json.dump(ob1,f)
+            pushDataToBucket("studentData.json", ob1)
 
             # Make dataset directory for the particular student
             if not os.path.exists(f"Dataset/{clsName_}/{enrollNum}"):
@@ -838,11 +853,13 @@ class StudentSignUpWindow(QMainWindow):
         self.clsName.clear()
 
 class DataCollectionWindow(QMainWindow):
-    def __init__(self, imgPtr: int=0):
+    def __init__(self, imgPtr: int=0, onlineTrain: bool=False):
         if not imgPtr:
-            self.imgPtr = 0
+            self.imgPtr = 1
         else:
             self.imgPtr = imgPtr
+
+        self.onlineTrain = onlineTrain
         super(DataCollectionWindow, self).__init__()
         loadUi("DataCollectionWindow.ui", self)
         self.worker1 = self.Worker1()
@@ -852,6 +869,10 @@ class DataCollectionWindow(QMainWindow):
         self.home.clicked.connect(goToHome)
         self.devInfo.clicked.connect(goToDevInfoWindow)
         self.showImages.clicked.connect(self.showCurrentImages)
+        self.train.clicked.connect(self.trainModel)
+
+    def trainModel(self):
+        train()
 
     def showCurrentImages(self):
         if currentEnroll_!="":
@@ -859,7 +880,8 @@ class DataCollectionWindow(QMainWindow):
             labels = [showImagesWindow.lbl1, showImagesWindow.lbl2, showImagesWindow.lbl3, showImagesWindow.lbl4, showImagesWindow.lbl5,
                     showImagesWindow.lbl6, showImagesWindow.lbl7, showImagesWindow.lbl8, showImagesWindow.lbl9, showImagesWindow.lbl10]
             for i, lbl in zip(range(len(images)), labels):
-                im = QPixmap(f"Dataset/{clsName_}/{currentEnroll_}/{i+1}.png")
+                imgPtr = int(os.path.splitext(images[i])[0])
+                im = QPixmap(f"Dataset/{clsName_}/{currentEnroll_}/{imgPtr}.png")
                 lbl.setPixmap(im)
                 lbl.setScaledContents(True)
                 lbl.show()
@@ -867,7 +889,9 @@ class DataCollectionWindow(QMainWindow):
         goToShowImagesWindow()
 
     def askAndSave(self):
-        if self.imgPtr <= 10:
+        print(self.imgPtr)
+        # len(os.listdir(f"./Dataset/{clsName_}/{currentEnroll_}"))<10
+        if self.imgPtr <= 10 or self.onlineTrain:
             msg = QMessageBox()
             msg.setWindowTitle("Are you sure you wanna save this pic?")
             msg.setText("The taken picture would be stored for training.")
@@ -875,20 +899,53 @@ class DataCollectionWindow(QMainWindow):
             x = msg.exec_()
             if x==QMessageBox.Save:
                 img = cv2.flip(self.worker1.frame, 1)
-                cv2.imwrite(f"./Dataset/{clsName_}/{currentEnroll_}/{self.imgPtr+1}.png", img)
+                cv2.imwrite(f"./Dataset/{clsName_}/{currentEnroll_}/{self.imgPtr}.png", img)
                 self.CurrentImg.setText(f"Img {self.imgPtr}.png has been updated successfully")
                 self.CurrentImg.adjustSize()
                 self.imgPtr+=1
+
+                if self.onlineTrain:
+                    self.onlineTrain = False
+                    boxes = face_recognition.face_locations(img)
+                    encodings = face_recognition.face_encodings(img, boxes)[0] #Warning only one box expected!
+                    print(encodings)
+                    f = open("StudentEncodings.json", "r")
+                    data = json.load(f); f.close()
+                    data["details"][currentEnroll_][self.imgPtr-2] = list(encodings)
+
+                    f = open("StudentEncodings.json", "w")
+                    json.dump(data,f)
+                    f.close()
             else:
                 print("Cancelled!")
                 pass
-
         else:
-            msg = QMessageBox()
+            dataCollectionWindow.capture.setText("Add Data")
+            dataCollectionWindow.capture.clicked.connect(self.submitAndEncode)
+
+            """msg = QMessageBox()
             msg.setWindowTitle("All images have been added!")
             msg.setText("All 10 Images have been added. If you wanna update some of them, click on 'Show Images' button.")
             msg.setIcon(QMessageBox.Critial)
-            x = msg.exec_()
+            x = msg.exec_()"""
+
+    def submitAndEncode(self):
+        path = f"Dataset/{clsName_}/{currentEnroll_}"
+        std = StudentData()
+        #t1 = threading.Thread(target=std.calculateEncodings, args=(path, currentEnroll_))
+
+        success = std.calculateEncodings(path, currentEnroll_)
+        msg = QMessageBox()
+        if success:
+            msg.setWindowTitle("Encodings added successfully!")
+            msg.setText("The encodings corresponding to your provided photographs have been added and the model is trained for new data successfully.")
+            msg.setIcon(QMessageBox.Information)
+            msg.exec_()
+        else:
+            msg.setWindowTitle("Failed to add Encodings")
+            msg.setText("There was a problem adding the encodings corresponding to your photographs!")
+            msg.setIcon(QMessageBox.Critical)
+            msg.exec_()
 
     def ImageUpdateSlot(self, Image):
         self.videoFrame.setPixmap(QPixmap.fromImage(Image))
@@ -905,6 +962,11 @@ class DataCollectionWindow(QMainWindow):
                     self.frame = frame
                     Image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                     flippedImage = cv2.flip(Image, 1)
+                    boxes = face_recognition.face_locations(flippedImage)
+                    for (top, right, bottom, left) in boxes:
+                        cv2.rectangle(flippedImage, (left, top), (right, bottom), (19, 209, 60), cv2.FONT_HERSHEY_COMPLEX, 1)
+
+                    # Show Image Bounding Boxes
                     qtFormatImage = QImage(flippedImage.data, flippedImage.shape[1], flippedImage.shape[0], QImage.Format_RGB888)
                     img = qtFormatImage.scaled(640, 480, Qt.KeepAspectRatio)
                     self.ImageUpdate.emit(img)
@@ -920,7 +982,8 @@ class ShowImagesWindow(QMainWindow):
         self.updatePic.clicked.connect(self.changePic)
 
     def changePic(self):
-        dataCollectionWindow.imgPtr = int(self.changePicBox.currentText()) - 1
+        dataCollectionWindow.imgPtr = int(self.changePicBox.currentText())
+        dataCollectionWindow.onlineTrain = True
         goToDataCollectionWindow()
 
 if __name__ == "__main__":

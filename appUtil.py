@@ -10,6 +10,9 @@ import datetime
 import smtplib
 from email.message import EmailMessage
 from automateTeamsUtil import send_attendance_alert
+import face_recognition
+import json
+from train_model import train
 
 """
 parser = argparse.ArgumentParser()
@@ -36,7 +39,7 @@ class AttendanceManager:
             "Phone Number":[]})
 
         self.studentScores = {}
-        self.studentAvailable = [os.path.split(e)[1] for e in os.listdir(f"..\Dataset\{self.clsName}")]
+        self.studentAvailable = [os.path.split(e)[1] for e in os.listdir(f"Dataset\{self.clsName}")]
         for e in self.studentAvailable:
             self.studentScores[e] = []
 
@@ -80,7 +83,11 @@ class AttendanceManager:
                 self.snipsTime.remove(ptr)
                 self.processImage()
 
+        #if self.moe=="Weighted Average":
         self.weightedAverage()
+        #else:
+        #    self.TopN()
+
         self.ToCSVAndSend()
 
     def weightedAverage(self):
@@ -134,3 +141,40 @@ class AttendanceManager:
             smtp.send_message(msg)
             print("mail sent!")
 
+class StudentData():
+    def calculateEncodings(self, path, n):
+        try:
+            imagePaths = os.listdir(path)
+
+            EncodingList = []
+            for imgPath in imagePaths:
+                im = cv2.imread(os.path.join(path, imgPath))
+                im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
+                boxes = face_recognition.face_locations(im)
+                encodings = face_recognition.face_encodings(im, boxes)
+                for encoding in encodings:
+                    print(imgPath)
+                    EncodingList.append(list(encoding))
+                time.sleep(2)
+
+            f  = open("StudentEncodings.json", "r+")
+            data = json.load(f)
+            f.close()
+
+            if n not in data["details"].keys():
+                data["details"][n] = []
+
+            data["details"][n].extend(EncodingList)
+
+            with open("StudentEncodings.json", "w") as f:
+                json.dump(data, f)
+
+            # Rest for a while
+            time.sleep(1)
+            train()
+
+            return True
+
+        except Exception as e:
+            print(e)
+            return False
