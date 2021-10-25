@@ -6,7 +6,8 @@ def send_attendance_alert(meeting_name: str, ptr: int):
     app = Application(backend='uia').connect(title_re=meeting_name)
 
     # Open the message bar
-    #print(app.windows())
+    #print(app.window().print_control_identifiers())
+    #app.window().print_control_identifiers()
     showConversation = app.window().child_window(title="Show conversation", auto_id="chat-button", control_type="Button").click()
     time.sleep(2)
     #print(app.window().print_control_identifiers())
