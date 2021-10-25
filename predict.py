@@ -4,11 +4,11 @@ import numpy as np, pandas as pd
 import os, time, random, json
 from sklearn.preprocessing import LabelEncoder
 import pickle, cv2
- 
+
 model = pickle.loads(open("model_knn.pickle", "rb").read())
 le = pickle.loads(open("le.pickle","rb").read())
 
-def predict_video(filename: str):
+"""def predict_video(filename: str):
     cap = cv2.VideoCapture(filename)
     while(cap):
         success, img = cap.read()
@@ -33,26 +33,29 @@ def predict_video(filename: str):
             cv2.waitKey(27)
             print(names)
             print(scores)
-
+"""
 #cap = cv2.VideoCapture("../test_video2.mp4")
 
 def predict_pic(img_path: str="", img=[]):
     if img_path!="":
-        img = cv2.imread(img_path)
-        boxes = face_recognition.face_locations(img)
-        embeddings = face_recognition.face_encodings(img, boxes)
-        names = []
-        scores = []
-        for embedding, (top, right, bottom, left) in zip(embeddings, boxes):
-            embedding = np.expand_dims(embedding, axis=0)
-            #print(model.predict_proba(embedding))
-            cls = np.argmax(model.predict_proba(embedding))
-            score = np.max(model.predict_proba(embedding))
-            if score > 0.9:
-                scores.append(score)
-                names.append(le.classes_[cls])
+        try:
+            img = cv2.imread(img_path)
+            boxes = face_recognition.face_locations(img)
+            embeddings = face_recognition.face_encodings(img, boxes)
+            names = []
+            scores = []
+            for embedding, (top, right, bottom, left) in zip(embeddings, boxes):
+                embedding = np.expand_dims(embedding, axis=0)
+                #print(model.predict_proba(embedding))
+                cls = np.argmax(model.predict_proba(embedding))
+                score = np.max(model.predict_proba(embedding))
+                if score > 0.9:
+                    scores.append(score)
+                    names.append(le.classes_[cls])
+            return scores, names
 
-        return scores, names
+        except Exception as e:
+            print(e)
 
     elif img!=[]:
         boxes = face_recognition.face_locations(img)
