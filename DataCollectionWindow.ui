@@ -16,9 +16,9 @@
      <colorrole role="Base">
       <brush brushstyle="SolidPattern">
        <color alpha="255">
-        <red>255</red>
-        <green>255</green>
-        <blue>255</blue>
+        <red>200</red>
+        <green>214</green>
+        <blue>228</blue>
        </color>
       </brush>
      </colorrole>
@@ -36,9 +36,9 @@
      <colorrole role="Base">
       <brush brushstyle="SolidPattern">
        <color alpha="255">
-        <red>255</red>
-        <green>255</green>
-        <blue>255</blue>
+        <red>200</red>
+        <green>214</green>
+        <blue>228</blue>
        </color>
       </brush>
      </colorrole>
@@ -443,6 +443,13 @@
          <height>23</height>
         </rect>
        </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton{
+	background-color:rgb(255,0,0);
+	border-radius:10px;
+	color:#FFFFFF
+}</string>
+       </property>
        <property name="text">
         <string>Capture</string>
        </property>
@@ -471,19 +478,6 @@
         <bool>true</bool>
        </property>
       </widget>
-      <widget class="QPushButton" name="capture_2">
-       <property name="geometry">
-        <rect>
-         <x>650</x>
-         <y>10</y>
-         <width>51</width>
-         <height>31</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Log Out</string>
-       </property>
-      </widget>
       <widget class="QPushButton" name="showImages">
        <property name="geometry">
         <rect>
@@ -492,6 +486,13 @@
          <width>75</width>
          <height>23</height>
         </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton{
+	background-color:rgb(255,0,0);
+	border-radius:10px;
+	color:#FFFFFF
+}</string>
        </property>
        <property name="text">
         <string>Show Images</string>
@@ -518,6 +519,13 @@
          <width>75</width>
          <height>23</height>
         </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton{
+	background-color:rgb(255,0,0);
+	border-radius:10px;
+	color:#FFFFFF
+}</string>
        </property>
        <property name="text">
         <string>Train model</string>
