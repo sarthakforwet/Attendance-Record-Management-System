@@ -107,7 +107,7 @@ class AttendanceManager:
                         pass
                 except:
                     continue
-    def top_n():
+    """def top_n():
         score={}
         temp=[]
         di={5:3,3:2,1:1}
@@ -116,7 +116,7 @@ class AttendanceManager:
             temp.sort(reverse=True)
             if(sum(temp[:di[nSnips]])>=0.9):
              score[i]=sum(temp[:di[self.nSnips])
-        
+       """ 
 
 
 
