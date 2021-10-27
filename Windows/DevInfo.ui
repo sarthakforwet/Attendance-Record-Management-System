@@ -127,7 +127,7 @@
    <widget class="QLabel" name="label_4">
     <property name="geometry">
      <rect>
-      <x>600</x>
+      <x>610</x>
       <y>60</y>
       <width>131</width>
       <height>131</height>
@@ -137,7 +137,7 @@
      <string/>
     </property>
     <property name="pixmap">
-     <pixmap>../Dataset/CSD/EN18CS301215/train/4.jpg</pixmap>
+     <pixmap>Dataset/CSD/EN18CS301215/1.jpg</pixmap>
     </property>
     <property name="scaledContents">
      <bool>true</bool>
@@ -313,7 +313,7 @@
      <rect>
       <x>430</x>
       <y>150</y>
-      <width>101</width>
+      <width>141</width>
       <height>21</height>
      </rect>
     </property>
@@ -326,7 +326,7 @@
      </font>
     </property>
     <property name="text">
-     <string>sarthakforwet</string>
+     <string>Rudra-kumawat-22</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -340,20 +340,20 @@
      <rect>
       <x>430</x>
       <y>120</y>
-      <width>51</width>
+      <width>171</width>
       <height>21</height>
      </rect>
     </property>
     <property name="font">
      <font>
       <family>Segoe Print</family>
-      <pointsize>10</pointsize>
+      <pointsize>8</pointsize>
       <weight>75</weight>
       <bold>true</bold>
      </font>
     </property>
     <property name="text">
-     <string>forwet</string>
+     <string>rudra-kumawat-6a523b183</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -380,7 +380,7 @@
      </font>
     </property>
     <property name="text">
-     <string>sarthakkhandelwal7676</string>
+     <string>rudrakumawat22</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -455,11 +455,14 @@
       <height>131</height>
      </rect>
     </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
     <property name="text">
      <string/>
     </property>
     <property name="pixmap">
-     <pixmap>../Dataset/CSD/EN18CS301234/train/IMG_20210914_144723.jpg</pixmap>
+     <pixmap>Dataset/CSD/EN18CS301234/14.jpg</pixmap>
     </property>
     <property name="scaledContents">
      <bool>true</bool>
@@ -510,7 +513,7 @@
      </font>
     </property>
     <property name="text">
-     <string>sarthakkhandelwal7676</string>
+     <string>sarthak.mahajan_</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -581,7 +584,7 @@
      <rect>
       <x>550</x>
       <y>310</y>
-      <width>51</width>
+      <width>161</width>
       <height>21</height>
      </rect>
     </property>
@@ -594,7 +597,7 @@
      </font>
     </property>
     <property name="text">
-     <string>forwet</string>
+     <string>sarthak-m-a92a88111</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -608,7 +611,7 @@
      <rect>
       <x>550</x>
       <y>340</y>
-      <width>101</width>
+      <width>121</width>
       <height>21</height>
      </rect>
     </property>
@@ -621,7 +624,7 @@
      </font>
     </property>
     <property name="text">
-     <string>sarthakforwet</string>
+     <string>mahajansarthak</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -947,6 +950,201 @@
       </widget>
      </item>
     </layout>
+   </widget>
+   <widget class="QLabel" name="label_26">
+    <property name="geometry">
+     <rect>
+      <x>170</x>
+      <y>50</y>
+      <width>141</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="palette">
+     <palette>
+      <active>
+       <colorrole role="WindowText">
+        <brush brushstyle="SolidPattern">
+         <color alpha="255">
+          <red>54</red>
+          <green>35</green>
+          <blue>159</blue>
+         </color>
+        </brush>
+       </colorrole>
+      </active>
+      <inactive>
+       <colorrole role="WindowText">
+        <brush brushstyle="SolidPattern">
+         <color alpha="255">
+          <red>54</red>
+          <green>35</green>
+          <blue>159</blue>
+         </color>
+        </brush>
+       </colorrole>
+      </inactive>
+      <disabled>
+       <colorrole role="WindowText">
+        <brush brushstyle="SolidPattern">
+         <color alpha="255">
+          <red>120</red>
+          <green>120</green>
+          <blue>120</blue>
+         </color>
+        </brush>
+       </colorrole>
+      </disabled>
+     </palette>
+    </property>
+    <property name="font">
+     <font>
+      <family>Segoe Print</family>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+      <underline>true</underline>
+     </font>
+    </property>
+    <property name="text">
+     <string>Sarthak Khandelwal</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+    </property>
+    <property name="wordWrap">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_27">
+    <property name="geometry">
+     <rect>
+      <x>600</x>
+      <y>30</y>
+      <width>141</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="palette">
+     <palette>
+      <active>
+       <colorrole role="WindowText">
+        <brush brushstyle="SolidPattern">
+         <color alpha="255">
+          <red>54</red>
+          <green>35</green>
+          <blue>159</blue>
+         </color>
+        </brush>
+       </colorrole>
+      </active>
+      <inactive>
+       <colorrole role="WindowText">
+        <brush brushstyle="SolidPattern">
+         <color alpha="255">
+          <red>54</red>
+          <green>35</green>
+          <blue>159</blue>
+         </color>
+        </brush>
+       </colorrole>
+      </inactive>
+      <disabled>
+       <colorrole role="WindowText">
+        <brush brushstyle="SolidPattern">
+         <color alpha="255">
+          <red>120</red>
+          <green>120</green>
+          <blue>120</blue>
+         </color>
+        </brush>
+       </colorrole>
+      </disabled>
+     </palette>
+    </property>
+    <property name="font">
+     <font>
+      <family>Segoe Print</family>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+      <underline>true</underline>
+     </font>
+    </property>
+    <property name="text">
+     <string>Rudra Kumawat</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+    </property>
+    <property name="wordWrap">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_28">
+    <property name="geometry">
+     <rect>
+      <x>380</x>
+      <y>250</y>
+      <width>141</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="palette">
+     <palette>
+      <active>
+       <colorrole role="WindowText">
+        <brush brushstyle="SolidPattern">
+         <color alpha="255">
+          <red>54</red>
+          <green>35</green>
+          <blue>159</blue>
+         </color>
+        </brush>
+       </colorrole>
+      </active>
+      <inactive>
+       <colorrole role="WindowText">
+        <brush brushstyle="SolidPattern">
+         <color alpha="255">
+          <red>54</red>
+          <green>35</green>
+          <blue>159</blue>
+         </color>
+        </brush>
+       </colorrole>
+      </inactive>
+      <disabled>
+       <colorrole role="WindowText">
+        <brush brushstyle="SolidPattern">
+         <color alpha="255">
+          <red>120</red>
+          <green>120</green>
+          <blue>120</blue>
+         </color>
+        </brush>
+       </colorrole>
+      </disabled>
+     </palette>
+    </property>
+    <property name="font">
+     <font>
+      <family>Segoe Print</family>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+      <underline>true</underline>
+     </font>
+    </property>
+    <property name="text">
+     <string>Sarthak Mahajan</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+    </property>
+    <property name="wordWrap">
+     <bool>true</bool>
+    </property>
    </widget>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>

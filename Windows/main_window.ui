@@ -248,6 +248,13 @@
       <bold>true</bold>
      </font>
     </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton{
+	background-color:rgb(255,0,0);
+	border-radius:10px;
+	color:#FFFFFF
+}</string>
+    </property>
     <property name="text">
      <string>Submit and Run</string>
     </property>

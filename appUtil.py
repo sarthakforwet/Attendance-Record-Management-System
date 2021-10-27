@@ -13,6 +13,8 @@ from automateTeamsUtil import send_attendance_alert
 import face_recognition
 import json
 from train_model import train
+import threading
+from gCloudUtil import *
 
 """
 parser = argparse.ArgumentParser()
@@ -54,10 +56,14 @@ class AttendanceManager:
 
         self.app = self.app.connect(title_re=title, timeout=20)
         self.app.window().maximize()
-        time.sleep(3)
-
-        pyautogui.screenshot("snip.png")
-        scores, names = predict_pic("snip.png")
+        time.sleep(2)
+        pyautogui.screenshot("img.png")
+        #time.sleep(2)
+        scores, names = predict_pic("img.png")
+        # = predict_pic("img.png")
+        #t1.start()
+        #scores, names = t1.join()
+        #scores, names = [1,1,1], ["EN18CS301233", "EN18CS301234", "EN18CS301215"]
         send_keys("%{TAB}")
         for s, n in zip(scores, names):
             print(s, n)
@@ -65,9 +71,11 @@ class AttendanceManager:
 
     def arrangeSlots(self):
         # Take Screenshots
-        self.snipsTime = random.sample(range(10, self.meetDuration*60), self.nSnips) #Change time for a 40 minute class or use a standardized formula.
+        self.snipsTime = random.sample(range(5, self.meetDuration*60), self.nSnips) #Change time for a 40 minute class or use a standardized formula.
+        #self.snipsTime = [10]
         print(self.snipsTime)
         self.alertTime = [e-3 for e in self.snipsTime]
+        #self.alertTime = [6]
 
     def runApp(self):
         self.arrangeSlots()
@@ -82,15 +90,18 @@ class AttendanceManager:
             if ptr in self.snipsTime:
                 self.snipsTime.remove(ptr)
                 self.processImage()
-
-        #if self.moe=="Weighted Average":
-        self.weightedAverage()
-        #else:
-        #    self.TopN()
+        if self.moe=="Weighted Average":
+            self.weightedAverage()
+        else:
+            self.TopN()
 
         self.ToCSVAndSend()
 
     def weightedAverage(self):
+        #with open("studentData.json", "r") as f:
+        #    data = json.load(f)
+        data = getFileDataFromBucket("studentData.json")
+        data = data["details"]
         # Calculate Weighted Average
         self.weights = [round(e, 3) for e in sorted(np.random.uniform(0.9, 1, size=(self.nSnips)))]
         scores = []
@@ -101,19 +112,41 @@ class AttendanceManager:
                     if score > 0.6:
                         record = {}
                         record["Enrollment Number"] = e
-                        record["Name"] = ""
+                        record["Name"] = data[e]["Name"]
                         record["Attendance"] = "P"
                         record["Probability (%)"] = str(round(score, 4) * 100)
-                        record["Phone Number"] = ""
+                        record["Phone Number"] = data[e]["Contact_number"]
                         self.df = self.df.append(record, ignore_index=True)
                         scores.append(score)
                     else:
                         # Process Image for that particular student
                         # Start this with an announcement saying the Enrollment number of the student.
-                        print("here")
+                        print("Score not worthy!")
                         pass
                 except:
                     continue
+
+    def TopN(self):
+        data = getFileDataFromBucket("studentData.json")
+        data = data["details"]
+        score={}
+        temp=[]
+        nSnipsToN={5:3,3:2,1:1}
+        threshDict = {1: 0.9, 3:1.8, 5:2.7}
+        for i in self.studentScores:
+            temp=self.studentScores[i]
+            temp.sort(reverse=True)
+            if(sum(temp[:nSnipsToN[self.nSnips]])>=threshDict[self.nSnips]):
+                #score[i]=sum(temp[:di[self.nSnips]])
+                val=np.mean(temp[:nSnipsToN[self.nSnips]])
+                record = {}
+                record["Enrollment Number"] = i
+                record["Name"] = data[i]["Name"]
+                record["Attendance"] = "P"
+                record["Probability (%)"] = str(round(val, 4) * 100)
+                record["Phone Number"] = data[i]["Contact_number"]
+                self.df = self.df.append(record, ignore_index=True)
+
 
     def ToCSVAndSend(self):
         # Convert to csv
@@ -145,7 +178,6 @@ class StudentData():
     def calculateEncodings(self, path, n):
         try:
             imagePaths = os.listdir(path)
-
             EncodingList = []
             for imgPath in imagePaths:
                 im = cv2.imread(os.path.join(path, imgPath))
@@ -157,18 +189,19 @@ class StudentData():
                     EncodingList.append(list(encoding))
                 time.sleep(2)
 
-            f  = open("StudentEncodings.json", "r+")
-            data = json.load(f)
-            f.close()
+            #f  = open("StudentEncodings.json", "r+")
+            #data = json.load(f)
+            #f.close()
+            data = getFileDataFromBucket("StudentEncodings.json")
 
             if n not in data["details"].keys():
                 data["details"][n] = []
 
             data["details"][n].extend(EncodingList)
 
-            with open("StudentEncodings.json", "w") as f:
-                json.dump(data, f)
-
+            #with open("StudentEncodings.json", "w") as f:
+            #    json.dump(data, f)
+            pushDataToBucket("StudentEncodings.json", data)
             # Rest for a while
             time.sleep(1)
             train()
