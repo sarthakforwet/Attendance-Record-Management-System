@@ -11,10 +11,10 @@ Following are some snips of the system in action.
 
     ```python
     elements = findwindows.find_elements(**criteria[0])
-        if len(elements)==1:
-            index=0
-        else:
-            index=1
+    if len(elements)==1:
+        index=0
+    else:
+        index=1
 
     dialog = self.backend.generic_wrapper_class(elements[index])
     ```

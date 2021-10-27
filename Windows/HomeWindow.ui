@@ -112,7 +112,7 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>0</y>
+         <y>-1939</y>
          <width>705</width>
          <height>2418</height>
         </rect>
@@ -233,7 +233,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>images/imgHome.jpeg</pixmap>
+            <pixmap>../images/imgHome.jpeg</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -941,7 +941,7 @@ of the class efficiently.
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>images/Fig.1.PNG</pixmap>
+            <pixmap>../images/Fig.1.PNG</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>

@@ -499,6 +499,8 @@ class Ui_MainWindow(object):
         #app.aboutToQuit.connect(self.closeEvent)
 
     def startApp(self):
+        ui.submitAndRun.hide()
+        #MainWindow.submitAndRun.hide()
         self.is_active = True
         self.worker = Worker(self)
         self.worker.start()
@@ -521,6 +523,8 @@ class Ui_MainWindow(object):
             else:
                 # Send critical message
                 raise ValueError("Mode not found!")
+
+            ui.submitAndRun.show()
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate

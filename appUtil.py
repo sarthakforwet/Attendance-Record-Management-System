@@ -71,10 +71,10 @@ class AttendanceManager:
 
     def arrangeSlots(self):
         # Take Screenshots
-        self.snipsTime = random.sample(range(35, self.meetDuration*60), self.nSnips) #Change time for a 40 minute class or use a standardized formula.
+        self.snipsTime = random.sample(range(5, self.meetDuration*60), self.nSnips) #Change time for a 40 minute class or use a standardized formula.
         #self.snipsTime = [10]
         print(self.snipsTime)
-        self.alertTime = [e-30 for e in self.snipsTime]
+        self.alertTime = [e-3 for e in self.snipsTime]
         #self.alertTime = [6]
 
     def runApp(self):
@@ -128,23 +128,23 @@ class AttendanceManager:
 
     def TopN(self):
         data = getFileDataFromBucket("studentData.json")
-        print("here")
+        data = data["details"]
         score={}
         temp=[]
-        di={5:3,3:2,1:1}
+        nSnipsToN={5:3,3:2,1:1}
         threshDict = {1: 0.9, 3:1.8, 5:2.7}
         for i in self.studentScores:
             temp=self.studentScores[i]
             temp.sort(reverse=True)
-            if(sum(temp[:di[self.nSnips]])>=threshDict[self.nSnips]):
+            if(sum(temp[:nSnipsToN[self.nSnips]])>=threshDict[self.nSnips]):
                 #score[i]=sum(temp[:di[self.nSnips]])
-                val=sum(temp[:di[self.nSnips]])
+                val=np.mean(temp[:nSnipsToN[self.nSnips]])
                 record = {}
                 record["Enrollment Number"] = i
                 record["Name"] = data[i]["Name"]
                 record["Attendance"] = "P"
                 record["Probability (%)"] = str(round(val, 4) * 100)
-                record["Phone Number"] = data[i]["Contact_Number"]
+                record["Phone Number"] = data[i]["Contact_number"]
                 self.df = self.df.append(record, ignore_index=True)
 
 
