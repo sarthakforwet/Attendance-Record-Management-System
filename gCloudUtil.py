@@ -63,9 +63,3 @@ def ifDirExists(folder_path):
             return True
     return False
 
-img_path = "Dataset/CSD/EN18CS301233/"
-#x = ifFileExists(img_path)
-#print(x)
-y = ifDirExists(img_path)
-print(y)
-#pushFileToBucket(img_path, img_path)
