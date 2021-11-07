@@ -23,7 +23,7 @@ def send_attendance_alert(meeting_name: str, ptr: int):
         time.sleep(1)
         messageWindow.type_keys(f"Attendance count for {ptr} second is about to Happen!!", with_spaces=True)
         send = app.window().child_window(title="Send", control_type="Button")
-        send.click_input()
+        #send.click_input()
         send.click()
         # Close the message Bar
         hideConversation = app.window().child_window(title="Hide conversation", auto_id="chat-button", control_type="Button").click()

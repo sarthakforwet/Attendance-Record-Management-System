@@ -71,10 +71,9 @@ class AttendanceManager:
 
     def arrangeSlots(self):
         # Take Screenshots
-        self.snipsTime = random.sample(range(5, self.meetDuration*60), self.nSnips) #Change time for a 40 minute class or use a standardized formula.
-        #self.snipsTime = [10]
+        self.snipsTime = random.sample(range(40, self.meetDuration*60), self.nSnips) #Change time for a 40 minute class or use a standardized formula.
         print(self.snipsTime)
-        self.alertTime = [e-3 for e in self.snipsTime]
+        self.alertTime = [e-30 for e in self.snipsTime]
         #self.alertTime = [6]
 
     def runApp(self):

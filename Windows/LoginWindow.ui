@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>540</width>
+    <width>755</width>
     <height>440</height>
    </rect>
   </property>
@@ -509,7 +509,7 @@ rgb(253, 253, 107)
       <enum>QTextEdit::NoWrap</enum>
      </property>
      <property name="placeholderText">
-      <string>0</string>
+      <string>xyz@example.com</string>
      </property>
     </widget>
     <widget class="QLabel" name="label">
@@ -994,9 +994,9 @@ rgb(253, 253, 107)
    <widget class="QPushButton" name="devInfo">
     <property name="geometry">
      <rect>
-      <x>660</x>
+      <x>580</x>
       <y>400</y>
-      <width>75</width>
+      <width>71</width>
       <height>23</height>
      </rect>
     </property>
