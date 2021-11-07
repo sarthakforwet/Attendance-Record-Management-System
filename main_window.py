@@ -49,18 +49,21 @@ def goToDataCollectionWindow():
 def goToShowImagesWindow():
     stackWidget.setCurrentIndex(9)
 
+def goToUpdateProfileWindow():
+    stackWidget.setCurrentIndex(10)
+
 # Util functions
 def checkFacultyLoginStats(self):
-    if not facultyloggedIn_:
-        goToLoginWindow()
-    else:
+    if config["FacultyLoggedIn"]["val"]:
         goToConfigWindow()
+    else:
+        goToLoginWindow()
 
 def checkStudentLoginStats(self):
-    if not studentloggedIn_:
-        goToStudentLoginWindow()
-    else:
+    if config["StudentLoggedIn"]["val"]:
         goToDataCollectionWindow()
+    else:
+        goToStudentLoginWindow()
 
 def resetPassword(window):
         try:
@@ -71,14 +74,17 @@ def resetPassword(window):
             fileName = "data.json"
             keyWord = "Email Address"
 
-        var, _ = QtWidgets.QInputDialog.getText(window, f"Enter your {keyWord}", f"Enter your {keyWord} to validate with the database.")
+        var, response = QtWidgets.QInputDialog.getText(window, f"Enter your {keyWord}", f"Enter your {keyWord} to validate with the database.")
 
         # Check if variable exists
-        with open(fileName, "r+") as f:
-                obj = json.load(f)
+        data = getFileDataFromBucket(fileName)
+        #with open(fileName, "r+") as f:
+        #        obj = json.load(f)
 
-        if var in obj["details"].keys():
+        if var in data["details"].keys():
                 goToForgotPasswordWindow(var, fileName)
+        elif not response:
+            pass
         else:
             msg = QtWidgets.QMessageBox()
             msg.setWindowTitle("Id not exists!")
@@ -86,6 +92,11 @@ def resetPassword(window):
             msg.setIcon(QtWidgets.QMessageBox.Critical)
             x = msg.exec_()
 
+def logOut():
+    config["FacultyLoggedIn"]["val"] = 0
+    config["StudentLoggedIn"]["val"] = 0
+    pushDataToBucket("config.json", config)
+    goToHome()
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -158,10 +169,10 @@ class Ui_MainWindow(object):
         self.label_3.setAlignment(QtCore.Qt.AlignCenter)
         self.label_3.setObjectName("label_3")
         self.mode = QtWidgets.QComboBox(self.centralwidget)
-        self.mode.setGeometry(QtCore.QRect(250, 110, 104, 21))
+        self.mode.setGeometry(QtCore.QRect(250, 110, 111, 21))
         self.mode.setObjectName("mode")
         self.mode.addItem("")
-        self.mode.addItem("")
+        #self.mode.addItem("")
         self.label_6 = QtWidgets.QLabel(self.centralwidget)
         self.label_6.setGeometry(QtCore.QRect(20, 200, 211, 16))
         font = QtGui.QFont()
@@ -440,11 +451,11 @@ class Ui_MainWindow(object):
         self.devInfo.setPalette(palette)
         self.devInfo.setFlat(True)
         self.devInfo.setObjectName("devInfo")
-        self.pushButton = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton.setGeometry(QtCore.QRect(680, 50, 51, 31))
-        self.pushButton.setObjectName("pushButton")
+        self.logOut = QtWidgets.QPushButton(self.centralwidget)
+        self.logOut.setGeometry(QtCore.QRect(680, 10, 51, 31))
+        self.logOut.setObjectName("logOut")
         self.home = QtWidgets.QPushButton(self.centralwidget)
-        self.home.setGeometry(QtCore.QRect(190, 10, 131, 24))
+        self.home.setGeometry(QtCore.QRect(10, 10, 131, 24))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -525,6 +536,89 @@ class Ui_MainWindow(object):
         self.home.setDefault(False)
         self.home.setFlat(True)
         self.home.setObjectName("home")
+        self.updProf = QtWidgets.QPushButton(self.centralwidget)
+        self.updProf.setGeometry(QtCore.QRect(160, 10, 131, 24))
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.updProf.sizePolicy().hasHeightForWidth())
+        self.updProf.setSizePolicy(sizePolicy)
+        self.updProf.setMinimumSize(QtCore.QSize(120, 10))
+        self.updProf.setMaximumSize(QtCore.QSize(300, 16777215))
+        palette = QtGui.QPalette()
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Button, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Text, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ButtonText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Base, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Window, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Button, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Text, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ButtonText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Base, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Window, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Button, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Text, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Base, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
+        self.updProf.setPalette(palette)
+        font = QtGui.QFont()
+        font.setFamily("Arial")
+        font.setPointSize(10)
+        font.setBold(True)
+        font.setWeight(75)
+        self.updProf.setFont(font)
+        self.updProf.setAutoFillBackground(False)
+        self.updProf.setStyleSheet("QPushButton{\n"
+"    background-color: rgb(255,0, 0);\n"
+"    border-radius:10px;\n"
+"    color:#FFFFFF\n"
+"}\n"
+"")
+        self.updProf.setAutoDefault(False)
+        self.updProf.setDefault(False)
+        self.updProf.setFlat(True)
+        self.updProf.setObjectName("updProf")
+
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
@@ -536,6 +630,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
         # Our Changes
 
         # Change Bg Color
@@ -551,6 +646,8 @@ class Ui_MainWindow(object):
         #self.logOut.clicked.connect(self.LogOut)
         #self.devInfo.clicked.connect(goToDevInfoWindow)
         #app.aboutToQuit.connect(self.closeEvent)
+        self.logOut.clicked.connect(logOut)
+        self.updProf.clicked.connect(goToUpdateProfileWindow)
 
     def startApp(self):
         ui.submitAndRun.hide()
@@ -588,7 +685,7 @@ class Ui_MainWindow(object):
         self.submitAndRun.setText(_translate("MainWindow", "Submit and Run"))
         self.label_3.setText(_translate("MainWindow", "Mode of Meeting"))
         self.mode.setItemText(0, _translate("MainWindow", "Microsoft Teams"))
-        self.mode.setItemText(1, _translate("MainWindow", "Zoom"))
+        #self.mode.setItemText(1, _translate("MainWindow", "Zoom"))
         self.label_6.setText(_translate("MainWindow", "Meeting Duration (in mins)"))
         self.moe.setItemText(0, _translate("MainWindow", "Weighted Average"))
         self.moe.setItemText(1, _translate("MainWindow", "Top N"))
@@ -600,8 +697,9 @@ class Ui_MainWindow(object):
         self.nSnips.setItemText(2, _translate("MainWindow", "5"))
         self.head.setText(_translate("MainWindow", "Enter the Configurations"))
         self.devInfo.setText(_translate("MainWindow", "Dev Info"))
-        self.pushButton.setText(_translate("MainWindow", "Log out"))
+        self.logOut.setText(_translate("MainWindow", "Log out"))
         self.home.setText(_translate("MainWindow", "Home"))
+        self.updProf.setText(_translate("MainWindow", "Update Profile"))
         self.actionNew.setText(_translate("MainWindow", "New"))
         self.actionNew.setStatusTip(_translate("MainWindow", "Ne w File can be created"))
         self.actionNew.setShortcut(_translate("MainWindow", "Ctrl+N"))
@@ -651,7 +749,20 @@ class LoginWindow(QDialog):
             if(password == data['details'][str(email)]['Password']):
                 global facultyloggedIn_
                 facultyloggedIn_ = True
+                config["FacultyLoggedIn"]["val"] = 1
+                config["FacultyLoggedIn"]["mail"] = currentEmail_
+                pushDataToBucket("config.json", config)
                 goToConfigWindow()
+                if config["StudentLoggedIn"]['val']:
+                    msg = QtWidgets.QMessageBox()
+                    msg.setWindowTitle("Multiple Login Attempts")
+                    msg.setText("Logout from Student account first!")
+                    msg.setIcon(QtWidgets.QMessageBox.Critical)
+                    x = msg.exec_()
+
+                config["FacultyLoggedIn"]['val'] = 1
+                config["FacultyLoggedIn"]["mail"] = currentEmail_
+                pushDataToBucket("config.json", config)
             else:
                 error_ = 1
         else:
@@ -729,9 +840,9 @@ class SignUpWindow(QDialog):
 
             ob1['details'][email_id_.lower()]={'Name':name_,'Contact_number':number_,'Password':pwd1}
 
-            with open("data.json", "w") as f:
-                json.dump(ob1,f)
-            #pushDataToBucket("data.json", ob1)
+            #with open("data.json", "w") as f:
+            #    json.dump(ob1,f)
+            pushDataToBucket("data.json", ob1)
 
             goToLoginWindow()
         else:
@@ -755,6 +866,7 @@ class HomeWindow(QMainWindow):
         self.home.clicked.connect(goToHome)
         self.student.clicked.connect(checkStudentLoginStats)
         self.faculty.clicked.connect(checkFacultyLoginStats)
+        self.setWindowTitle("Attendance Record Management System")
 
 class ForgotPasswordWindow(QMainWindow):
     def __init__(self):
@@ -815,6 +927,7 @@ class StudentLoginWindow(QMainWindow):
         self.SignUp.clicked.connect(goToStudentSignUpWindow)
         self.forgotPassBtn.clicked.connect(lambda: resetPassword(self))
         self.devInfo.clicked.connect(goToDevInfoWindow)
+        self.setStyleSheet("background-color: #c8d6e4;")
 
     def verifyAndLogin(self):
         enroll = self.enrollNum.toPlainText()
@@ -831,6 +944,17 @@ class StudentLoginWindow(QMainWindow):
                 currentEnroll_ = enroll
                 clsName_ = data["details"][enroll]["Class"]
                 goToDataCollectionWindow()
+                global config
+                if config["FacultyLoggedIn"]['val']:
+                    msg = QtWidgets.QMessageBox()
+                    msg.setWindowTitle("Multiple Login Attempts")
+                    msg.setText("Logout from Faculty account first!")
+                    msg.setIcon(QtWidgets.QMessageBox.Critical)
+                    x = msg.exec_()
+
+                config["StudentLoggedIn"]['val'] = 1
+                config["StudentLoggedIn"]["enroll"] = currentEnroll_
+                pushDataToBucket("config.json", config)
             else:
                 error_ = 1
         else:
@@ -860,8 +984,8 @@ class StudentSignUpWindow(QMainWindow):
         # Constrain Input
         validator = QtGui.QRegExpValidator(QtCore.QRegExp(r'[0-9]{10}'))
         self.contact.setValidator(validator)
-
         self.devInfo.clicked.connect(goToDevInfoWindow)
+        self.setStyleSheet("background-color: #c8d6e4;")
 
     def SignUp(self):
         name_ = self.name.toPlainText()
@@ -937,13 +1061,32 @@ class DataCollectionWindow(QMainWindow):
         super(DataCollectionWindow, self).__init__()
         loadUi("Windows/DataCollectionWindow.ui", self)
         self.capture.clicked.connect(self.askAndSave)
-        self.home.clicked.connect(goToHome)
-        self.devInfo.clicked.connect(goToDevInfoWindow)
+        self.home.clicked.connect(self.goHome)
+        self.devInfo.clicked.connect(self.goDevInfo)
         self.showImages.clicked.connect(self.showCurrentImages)
         self.train.clicked.connect(self.trainModel)
+        self.logOut.clicked.connect(self.logout)
+        self.updProf.clicked.connect(self.goUpdateProfile)
+        self.setStyleSheet("background-color: #c8d6e4;")
+
+    def goHome(self):
+        self.worker1.ThreadActive = False
+        goToHome()
+
+    def goDevInfo(self):
+        self.worker1.ThreadActive = False
+        goToDevInfoWindow()
 
     def trainModel(self):
         train()
+
+    def logout(self):
+        self.worker1.ThreadActive = False
+        logOut()
+
+    def goUpdateProfile(self):
+        self.worker1.ThreadActive = False
+        goToUpdateProfileWindow()
 
     def showCurrentImages(self):
         if currentEnroll_!="":
@@ -957,6 +1100,7 @@ class DataCollectionWindow(QMainWindow):
                 lbl.setScaledContents(True)
                 lbl.show()
 
+        self.worker1.ThreadActive = False
         goToShowImagesWindow()
 
     def askAndSave(self):
@@ -979,7 +1123,7 @@ class DataCollectionWindow(QMainWindow):
                     self.onlineTrain = False
                     boxes = face_recognition.face_locations(img)
                     encodings = face_recognition.face_encodings(img, boxes)[0] #Warning only one box expected!
-                    print(encodings)
+                    #print(encodings)
                     f = open("StudentEncodings.json", "r")
                     data = json.load(f); f.close()
                     data["details"][currentEnroll_][self.imgPtr-2] = list(encodings)
@@ -1051,8 +1195,60 @@ class ShowImagesWindow(QMainWindow):
         dataCollectionWindow.onlineTrain = True
         goToDataCollectionWindow()
 
-if __name__ == "__main__":
+class UpdateProfile(QMainWindow):
+    def __init__(self):
+        super(UpdateProfile, self).__init__()
+        loadUi("Windows/UpdateProfileWindow.ui", self)
+        self.updateProf.clicked.connect(self.updateProfile)
+        if config["FacultyLoggedIn"]["val"]:
+            self.clsName.hide()
+            self.label_15.hide()
+            self.label_11.setGeometry(130, 130, 151, 21)
+            self.contact.setGeometry(300, 130, 221, 21)
+        self.setStyleSheet("background-color: #c8d6e4;")
+        self.devInfo.clicked.connect(goToDevInfoWindow)
+        self.home.clicked.connect(goToHome)
 
+    def updateProfile(self):
+        if facultyloggedIn_ and studentloggedIn_:
+            msg = QMessageBox()
+            msg.setWindowTitle("Error: Multiple Profiles!!")
+            msg.setText("Can't update profile since multiple instances are open on this device")
+            msg.setIcon(QMessageBox.Critical)
+            msg.exec_()
+
+        elif facultyloggedIn_:
+            data = getFileDataFromBucket("data.json")
+            data = data["details"]
+            profile = data[currentEmail_]
+            email_ = self.email_id.toPlainText()
+            #class_ = self.clsName.toPlainText()
+            contact_ = self.contact.currentText()
+
+            if email_ != "":
+                data[email_] = profile
+                del data[currentEmail_]
+                print(data)
+
+            if contact_ != "":
+                data[currentEmail_]["Number"] = contact_
+
+        elif studentloggedIn_:
+            data = getFileDataFromBucket("studentData.json")
+            data = data["details"]
+            email_ = self.email_id.toPlainText()
+            contact_ = self.contact.currentText()
+            class_ = self.clsName.toPlainText()
+
+            if email_ != "":
+                data[currentEnroll_]["email_id"] = email_
+            if class_ != "":
+                data["Class"] = class_
+
+            if contact_!= "":
+                data["Contact_number"] = contact_
+
+if __name__ == "__main__":
     # Global Config
     facultyloggedIn_ = False
     studentloggedIn_ = False
@@ -1060,6 +1256,12 @@ if __name__ == "__main__":
     currentEmail_ = ""
     clsName_ = ""
     ThreadActive_ = ""
+
+    config = getFileDataFromBucket("config.json")
+    if config["FacultyLoggedIn"]["val"]:
+        currentEmail_ = config["FacultyLoggedIn"]["mail"]
+    elif config["StudentLoggedIn"]["val"]:
+        currentEnroll_ = config["StudentLoggedIn"]["enroll"]
 
     app = QtWidgets.QApplication(sys.argv)
     stackWidget = QtWidgets.QStackedWidget()
@@ -1073,7 +1275,6 @@ if __name__ == "__main__":
     signUpWindow = SignUpWindow()
     signUpWindow.setWindowTitle("Attendance Record Management System")
     homeWindow = HomeWindow()
-    homeWindow.setWindowTitle("Attendance Record Management System")
     forgotPasswordWindow = ForgotPasswordWindow()
     forgotPasswordWindow.setWindowTitle("Attendance Record Management System")
     devInfoWindow = DevInfoWindow()
@@ -1082,6 +1283,8 @@ if __name__ == "__main__":
     studentLoginWindow = StudentLoginWindow()
     dataCollectionWindow = DataCollectionWindow()
     showImagesWindow = ShowImagesWindow()
+    updateProfileWindow = UpdateProfile()
+
 
     stackWidget.addWidget(homeWindow)
     stackWidget.addWidget(loginWindow)
@@ -1093,6 +1296,7 @@ if __name__ == "__main__":
     stackWidget.addWidget(studentSignUpWindow)
     stackWidget.addWidget(dataCollectionWindow)
     stackWidget.addWidget(showImagesWindow)
+    stackWidget.addWidget(updateProfileWindow)
 
     stackWidget.setFixedHeight(440)
     stackWidget.setFixedWidth(740)
