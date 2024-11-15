@@ -2,7 +2,7 @@ In this application, an attendance record management system is being proposed wh
 
 Following are some snips of the system in action.
 
-![](images/snip1.png)
+![ARMS](images/snip1.PNG)
 
 
 # To resolve the Element Ambiguous Error:
